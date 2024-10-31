@@ -11,10 +11,10 @@ public class CommandOutputGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private ArrayNode getPlayerDeck(Player player) {
-        ArrayList<Card> deck = player.getDeck();
+        ArrayList<minionCard> deck = player.getDeck();
 
         ArrayNode playerDeck = mapper.createArrayNode();
-        for (Card card : deck) {
+        for (minionCard card : deck) {
             playerDeck.add(card.toJson());
         }
         return playerDeck;

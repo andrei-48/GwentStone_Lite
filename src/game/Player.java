@@ -3,30 +3,36 @@ package game;
 import java.util.ArrayList;
 
 public class Player {
-    private ArrayList<Card> hand;
-    private ArrayList<Card> deck;
+    private ArrayList<minionCard> hand;
+    private ArrayList<minionCard> deck;
     private Hero hero;
     private int mana;
 
     public static final int MAX_MANA_GAIN = 10;
 
-    public Player(ArrayList<Card> deck, Hero hero) {
+    public Player(ArrayList<minionCard> deck, Hero hero) {
         this.deck = deck;
         this.hand = new ArrayList<>();
         this.hero = hero;
         this.mana = 0;
     }
 
-    public ArrayList<Card> getHand() {
+    public ArrayList<minionCard> getHand() {
         return hand;
     }
 
-    public ArrayList<Card> getDeck() {
+    public ArrayList<minionCard> getDeck() {
         return deck;
     }
 
     public Hero getHero() {
         return hero;
+    }
+
+    public void placeCard(int idx) {
+        minionCard card = hand.get(idx);
+        if (card.getMana() <= this.mana) {
+        }
     }
 
     public void drawCard() {

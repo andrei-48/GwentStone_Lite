@@ -13,14 +13,14 @@ import java.util.Random;
 import static java.util.Collections.shuffle;
 
 public class Game {
-    private ArrayList<ArrayList<Card>> rows;
+    private ArrayList<ArrayList<minionCard>> board;
     private final int startingPlayer;
     private int currentRound;
     private int currentPlayer;
     private Player playerOne;
     private Player playerTwo;
-    private ArrayList<Card> playerOneDeck;
-    private ArrayList<Card> playerTwoDeck;
+    private ArrayList<minionCard> playerOneDeck;
+    private ArrayList<minionCard> playerTwoDeck;
 
     public static final int MAX_ROWS = 4;
 
@@ -28,9 +28,9 @@ public class Game {
         this.startingPlayer = gameInput.getStartingPlayer();
         this.currentPlayer = startingPlayer;
         this.currentRound = 1;
-        this.rows = new ArrayList<>();
+        this.board = new ArrayList<>();
         for (int i = 0; i < MAX_ROWS; i++) {
-            rows.add(new ArrayList<>());
+            board.add(new ArrayList<>());
         }
         this.playerOneDeck = new ArrayList<>();
         this.playerTwoDeck = new ArrayList<>();
@@ -38,11 +38,11 @@ public class Game {
         // set the decks for each player
         for (int i = 0; i < playerOneDecks.getNrCardsInDeck(); i++) {
             playerOneDeck.add(new
-                    Card(playerOneDecks.getDecks().get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    minionCard(playerOneDecks.getDecks().get(gameInput.getPlayerOneDeckIdx()).get(i)));
         }
         for (int i = 0; i < playerTwoDecks.getNrCardsInDeck(); i++) {
             playerTwoDeck.add(new
-                    Card(playerTwoDecks.getDecks().get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    minionCard(playerTwoDecks.getDecks().get(gameInput.getPlayerTwoDeckIdx()).get(i)));
         }
 
         // shuffle the decks
@@ -110,6 +110,10 @@ public class Game {
         } else {
             newRound();
         }
+    }
+
+    public Player getCurrentPlayer() {
+        return this.getPlayer(this.currentPlayer);
     }
 
     public int getPlayerTurn() {
