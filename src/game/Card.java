@@ -35,6 +35,26 @@ public class Card {
         this.health = health;
     }
 
+    public int getMana() {
+        return mana;
+    }
+
+    public int getAttackDamage() {
+        return attackDamage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public ArrayList<String> getColors() {
+        return colors;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();

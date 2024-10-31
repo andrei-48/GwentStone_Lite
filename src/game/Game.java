@@ -46,46 +46,50 @@ public class Game {
         }
 
         // shuffle the decks
-        Random rand = new Random(gameInput.getPlayerOneDeckIdx());
+        Random rand;
+        rand = new Random(gameInput.getShuffleSeed());
         shuffle(playerOneDeck, rand);
+        rand = new Random(gameInput.getShuffleSeed());
         shuffle(playerTwoDeck, rand);
 
         // set playerOne hero
         switch (gameInput.getPlayerOneHero().getName()) {
-            case "LordRoyce":
+            case "Lord Royce":
                 playerOne = new Player(playerOneDeck, new LordRoyce(gameInput.getPlayerOneHero()));
                 break;
-            case "EmpressThorina":
+            case "Empress Thorina":
                 playerOne = new Player(playerOneDeck, new EmpressThorina(gameInput.getPlayerOneHero()));
                 break;
-            case "KingMudface":
+            case "King Mudface":
                 playerOne = new Player(playerOneDeck, new KingMudface(gameInput.getPlayerOneHero()));
                 break;
-            case "GeneralKocioraw":
+            case "General Kocioraw":
                 playerOne = new Player(playerOneDeck, new GeneralKocioraw(gameInput.getPlayerOneHero()));
                 break;
         }
 
         // set playerTwo hero
         switch (gameInput.getPlayerTwoHero().getName()) {
-            case "LordRoyce":
+            case "Lord Royce":
                 playerTwo = new Player(playerTwoDeck, new LordRoyce(gameInput.getPlayerTwoHero()));
                 break;
-            case "EmpressThorina":
+            case "Empress Thorina":
                 playerTwo = new Player(playerTwoDeck, new EmpressThorina(gameInput.getPlayerTwoHero()));
                 break;
-            case "KingMudface":
+            case "King Mudface":
                 playerTwo = new Player(playerTwoDeck, new KingMudface(gameInput.getPlayerTwoHero()));
                 break;
-            case "GeneralKocioraw":
+            case "General Kocioraw":
                 playerTwo = new Player(playerTwoDeck, new GeneralKocioraw(gameInput.getPlayerTwoHero()));
                 break;
         }
+        playerOne.drawCard();
+        playerTwo.drawCard();
     }
 
 
     public Player getPlayer(int idx) {
-        if(idx == 1)
+        if (idx == 1)
             return playerOne;
         else
             return playerTwo;

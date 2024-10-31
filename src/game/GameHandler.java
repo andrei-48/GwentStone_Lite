@@ -2,6 +2,7 @@ package game;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.ActionsInput;
 import fileio.GameInput;
 import fileio.Input;
@@ -12,6 +13,7 @@ public class GameHandler {
     private Input input;
     private int playerOneWins;
     private int playerTwoWins;
+    private final CommandOutputGenerator outputGenerator = new CommandOutputGenerator();
 
     public GameHandler(Input input) {
         this.input = input;
@@ -19,29 +21,23 @@ public class GameHandler {
         this.playerTwoWins = 0;
     }
 
-    private ArrayNode getPlayerDeck(Player player) {
-        ArrayList<Card> deck = player.getDeck();
-        ObjectMapper mapper = new ObjectMapper();
-
-        ArrayNode playerDeck = mapper.createArrayNode();
-        for (Card card : deck) {
-            playerDeck.add(card.toJson());
-        }
-        return playerDeck;
-    }
-
     public void handleInput(ArrayNode output) {
         for (int i = 0; i < input.getGames().size(); i++) {
             GameInput currentGameInput = input.getGames().get(i);
             Game currentGame = new Game(currentGameInput.getStartGame(),
-                    input.getPlayerOneDecks(), input.getPlayerOneDecks());
+                    input.getPlayerOneDecks(), input.getPlayerTwoDecks());
 
             ArrayList<ActionsInput> gameActions = currentGameInput.getActions();
             for (ActionsInput gameAction : gameActions) {
                 String command = gameAction.getCommand();
                 switch (command) {
-                    case "GetPlayerDeck":
-                        output.add(getPlayerDeck(currentGame.getPlayer(gameAction.getPlayerIdx())));
+                    case "placeCard":
+                        break;
+                        case "endPlayerTurn":
+                            currentGame.endTurn();
+                            break;
+                        default:
+                            output.add(outputGenerator.generate(gameAction, currentGame));
                 }
             }
         }
