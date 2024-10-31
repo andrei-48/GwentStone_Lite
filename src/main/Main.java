@@ -70,7 +70,9 @@ public final class Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
+        GameHandler Handler = new GameHandler(inputData);
 
+        Handler.handleInput(output);
 
         /*
          * TODO Implement your function here
