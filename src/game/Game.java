@@ -13,16 +13,17 @@ import java.util.Random;
 import static java.util.Collections.shuffle;
 
 public class Game {
-    private ArrayList<ArrayList<minionCard>> board;
+    private ArrayList<ArrayList<MinionCard>> board;
     private final int startingPlayer;
     private int currentRound;
     private int currentPlayer;
     private Player playerOne;
     private Player playerTwo;
-    private ArrayList<minionCard> playerOneDeck;
-    private ArrayList<minionCard> playerTwoDeck;
+    private ArrayList<MinionCard> playerOneDeck;
+    private ArrayList<MinionCard> playerTwoDeck;
 
-    public static final int MAX_ROWS = 4;
+    private static final int MAX_ROWS = 4;
+    private static final int MAX_CARDS_ON_ROW = 5;
 
     public Game(StartGameInput gameInput, DecksInput playerOneDecks, DecksInput playerTwoDecks) {
         this.startingPlayer = gameInput.getStartingPlayer();
@@ -38,11 +39,11 @@ public class Game {
         // set the decks for each player
         for (int i = 0; i < playerOneDecks.getNrCardsInDeck(); i++) {
             playerOneDeck.add(new
-                    minionCard(playerOneDecks.getDecks().get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    MinionCard(playerOneDecks.getDecks().get(gameInput.getPlayerOneDeckIdx()).get(i)));
         }
         for (int i = 0; i < playerTwoDecks.getNrCardsInDeck(); i++) {
             playerTwoDeck.add(new
-                    minionCard(playerTwoDecks.getDecks().get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    MinionCard(playerTwoDecks.getDecks().get(gameInput.getPlayerTwoDeckIdx()).get(i)));
         }
 
         // shuffle the decks
@@ -130,27 +131,27 @@ public class Game {
         return currentPlayer;
     }
 
-    public ArrayList<ArrayList<minionCard>> getBoard() {
+    public ArrayList<ArrayList<MinionCard>> getBoard() {
         return board;
     }
 
-    public boolean checkCardPlace(minionCard card) {
-        if(currentPlayer == 1) {
+    public boolean checkCardPlace(MinionCard card) {
+        if (currentPlayer == 1) {
             if (card.isFrontRow()) {
-                return board.get(2).size() < 5;
+                return board.get(Player.PLAYER_ONE_FRONT).size() < MAX_CARDS_ON_ROW;
             } else {
-                return board.get(3).size() < 5;
+                return board.get(Player.PLAYER_ONE_BACK).size() < MAX_CARDS_ON_ROW;
             }
         } else {
             if (card.isFrontRow()) {
-                return board.get(1).size() < 5;
+                return board.get(Player.PLAYER_TWO_FRONT).size() < MAX_CARDS_ON_ROW;
             } else {
-                return board.get(0).size() < 5;
+                return board.get(Player.PLAYER_TWO_BACK).size() < MAX_CARDS_ON_ROW;
             }
         }
     }
 
-    public boolean checkCardMana(minionCard card) {
+    public boolean checkCardMana(MinionCard card) {
         return getCurrentPlayer().getMana() >= card.getMana();
     }
 }

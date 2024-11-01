@@ -34,7 +34,7 @@ public class GameHandler {
                 switch (command) {
                     case "placeCard":
                         if (!currentGame.getCurrentPlayer().getHand().isEmpty()) {
-                            minionCard chosenCard = currentGame.getCurrentPlayer().getHand().
+                            MinionCard chosenCard = currentGame.getCurrentPlayer().getHand().
                                     get(gameAction.getHandIdx());
                             if (currentGame.checkCardMana(chosenCard)) {
                                 if (currentGame.checkCardPlace(chosenCard)) {

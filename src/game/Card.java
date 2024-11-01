@@ -18,7 +18,7 @@ public class Card {
     public Card() {
     }
 
-    public Card(CardInput cardInput) {
+    public Card(final CardInput cardInput) {
         this.mana = cardInput.getMana();
         this.attackDamage = cardInput.getAttackDamage();
         this.health = cardInput.getHealth();
@@ -27,6 +27,10 @@ public class Card {
         this.name = cardInput.getName();
     }
 
+    /**
+     * Return the current health of a card
+     * @return Remaining health
+     */
     public int getHealth() {
         return health;
     }

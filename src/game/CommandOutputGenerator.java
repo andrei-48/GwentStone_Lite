@@ -13,30 +13,30 @@ public class CommandOutputGenerator {
     private final int placeErr = 2;
 
     private ArrayNode getPlayerDeck(Player player) {
-        ArrayList<minionCard> deck = player.getDeck();
+        ArrayList<MinionCard> deck = player.getDeck();
 
         ArrayNode playerDeck = mapper.createArrayNode();
-        for (minionCard card : deck) {
+        for (MinionCard card : deck) {
             playerDeck.add(card.toJson());
         }
         return playerDeck;
     }
 
     private ArrayNode getPlayerHand(Player player) {
-        ArrayList<minionCard> hand = player.getHand();
+        ArrayList<MinionCard> hand = player.getHand();
         ArrayNode playerHand = mapper.createArrayNode();
-        for (minionCard card : hand) {
+        for (MinionCard card : hand) {
             playerHand.add(card.toJson());
         }
         return playerHand;
     }
 
-    private ArrayNode getCardsOnTable(ArrayList<ArrayList<minionCard>> board) {
+    private ArrayNode getCardsOnTable(ArrayList<ArrayList<MinionCard>> board) {
         ArrayNode cardsOnTable = mapper.createArrayNode();
-        for (ArrayList<minionCard> row : board) {
+        for (ArrayList<MinionCard> row : board) {
             ArrayNode cardsOnRow = mapper.createArrayNode();
 
-            for (minionCard card : row) {
+            for (MinionCard card : row) {
                 cardsOnRow.add(card.toJson());
             }
             cardsOnTable.add(cardsOnRow);
