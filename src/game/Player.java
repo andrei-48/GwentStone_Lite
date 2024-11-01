@@ -14,7 +14,7 @@ public class Player {
         this.deck = deck;
         this.hand = new ArrayList<>();
         this.hero = hero;
-        this.mana = 0;
+        this.mana = 1;
     }
 
     public ArrayList<minionCard> getHand() {
@@ -29,21 +29,44 @@ public class Player {
         return hero;
     }
 
-    public void placeCard(int idx) {
+    public int getMana() {
+        return mana;
+    }
+
+    /**
+     * Places a card with the given index from the hand on the board
+     * @param idx the index of the card in hand
+     * @param game the current game
+     */
+    public void placeCard(int idx, Game game) {
         minionCard card = hand.get(idx);
-        if (card.getMana() <= this.mana) {
+        this.mana -= card.getMana();
+        if(game.getPlayerTurn() == 1) {
+            if (card.isFrontRow()) {
+                // place the card on the front row of playerOne
+                game.getBoard().get(2).add(card);
+            } else {
+                // place the card on the back row of playerOne
+                game.getBoard().get(3).add(card);
+            }
+        } else {
+            if (card.isFrontRow()) {
+                // place the card on the front row of playerTwo
+                game.getBoard().get(1).add(card);
+            } else {
+                // place the card on the back row of playerTwo
+                game.getBoard().get(0).add(card);
+            }
         }
+        hand.remove(idx);
     }
 
     public void drawCard() {
-        this.hand.add(this.deck.remove(0));
+        if(!this.deck.isEmpty())
+            this.hand.add(this.deck.remove(0));
     }
 
     public void incMana(int mana) {
-        if (mana <= MAX_MANA_GAIN) {
-            this.mana += mana;
-        } else {
-            this.mana += MAX_MANA_GAIN;
-        }
+        this.mana += Math.min(mana, MAX_MANA_GAIN);
     }
 }

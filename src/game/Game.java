@@ -55,32 +55,40 @@ public class Game {
         // set playerOne hero
         switch (gameInput.getPlayerOneHero().getName()) {
             case "Lord Royce":
-                playerOne = new Player(playerOneDeck, new LordRoyce(gameInput.getPlayerOneHero()));
+                playerOne = new Player(playerOneDeck,
+                        new LordRoyce(gameInput.getPlayerOneHero()));
                 break;
             case "Empress Thorina":
-                playerOne = new Player(playerOneDeck, new EmpressThorina(gameInput.getPlayerOneHero()));
+                playerOne = new Player(playerOneDeck,
+                        new EmpressThorina(gameInput.getPlayerOneHero()));
                 break;
             case "King Mudface":
-                playerOne = new Player(playerOneDeck, new KingMudface(gameInput.getPlayerOneHero()));
+                playerOne = new Player(playerOneDeck,
+                        new KingMudface(gameInput.getPlayerOneHero()));
                 break;
             case "General Kocioraw":
-                playerOne = new Player(playerOneDeck, new GeneralKocioraw(gameInput.getPlayerOneHero()));
+                playerOne = new Player(playerOneDeck,
+                        new GeneralKocioraw(gameInput.getPlayerOneHero()));
                 break;
         }
 
         // set playerTwo hero
         switch (gameInput.getPlayerTwoHero().getName()) {
             case "Lord Royce":
-                playerTwo = new Player(playerTwoDeck, new LordRoyce(gameInput.getPlayerTwoHero()));
+                playerTwo = new Player(playerTwoDeck,
+                        new LordRoyce(gameInput.getPlayerTwoHero()));
                 break;
             case "Empress Thorina":
-                playerTwo = new Player(playerTwoDeck, new EmpressThorina(gameInput.getPlayerTwoHero()));
+                playerTwo = new Player(playerTwoDeck,
+                        new EmpressThorina(gameInput.getPlayerTwoHero()));
                 break;
             case "King Mudface":
-                playerTwo = new Player(playerTwoDeck, new KingMudface(gameInput.getPlayerTwoHero()));
+                playerTwo = new Player(playerTwoDeck,
+                        new KingMudface(gameInput.getPlayerTwoHero()));
                 break;
             case "General Kocioraw":
-                playerTwo = new Player(playerTwoDeck, new GeneralKocioraw(gameInput.getPlayerTwoHero()));
+                playerTwo = new Player(playerTwoDeck,
+                        new GeneralKocioraw(gameInput.getPlayerTwoHero()));
                 break;
         }
         playerOne.drawCard();
@@ -99,6 +107,8 @@ public class Game {
         currentRound++;
         playerOne.incMana(currentRound);
         playerTwo.incMana(currentRound);
+        playerOne.drawCard();
+        playerTwo.drawCard();
         currentPlayer = startingPlayer;
     }
 
@@ -118,5 +128,29 @@ public class Game {
 
     public int getPlayerTurn() {
         return currentPlayer;
+    }
+
+    public ArrayList<ArrayList<minionCard>> getBoard() {
+        return board;
+    }
+
+    public boolean checkCardPlace(minionCard card) {
+        if(currentPlayer == 1) {
+            if (card.isFrontRow()) {
+                return board.get(2).size() < 5;
+            } else {
+                return board.get(3).size() < 5;
+            }
+        } else {
+            if (card.isFrontRow()) {
+                return board.get(1).size() < 5;
+            } else {
+                return board.get(0).size() < 5;
+            }
+        }
+    }
+
+    public boolean checkCardMana(minionCard card) {
+        return getCurrentPlayer().getMana() >= card.getMana();
     }
 }

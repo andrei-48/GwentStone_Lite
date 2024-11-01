@@ -1,8 +1,6 @@
 package game;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.ActionsInput;
 import fileio.GameInput;
 import fileio.Input;
@@ -10,10 +8,13 @@ import fileio.Input;
 import java.util.ArrayList;
 
 public class GameHandler {
-    private Input input;
+    private final Input input;
     private int playerOneWins;
     private int playerTwoWins;
     private final CommandOutputGenerator outputGenerator = new CommandOutputGenerator();
+
+    private final int manaErr = 1;
+    private final int placeErr = 2;
 
     public GameHandler(Input input) {
         this.input = input;
@@ -32,12 +33,27 @@ public class GameHandler {
                 String command = gameAction.getCommand();
                 switch (command) {
                     case "placeCard":
+                        if (!currentGame.getCurrentPlayer().getHand().isEmpty()) {
+                            minionCard chosenCard = currentGame.getCurrentPlayer().getHand().
+                                    get(gameAction.getHandIdx());
+                            if (currentGame.checkCardMana(chosenCard)) {
+                                if (currentGame.checkCardPlace(chosenCard)) {
+                                    currentGame.getCurrentPlayer().placeCard(gameAction.getHandIdx(), currentGame);
+                                } else {
+                                    output.add(outputGenerator.generate(gameAction, currentGame, placeErr));
+                                }
+                            } else {
+                                output.add(outputGenerator.generate(gameAction, currentGame, manaErr));
+                            }
+                        }
                         break;
-                        case "endPlayerTurn":
-                            currentGame.endTurn();
-                            break;
-                        default:
-                            output.add(outputGenerator.generate(gameAction, currentGame));
+                    case "endPlayerTurn":
+                        currentGame.endTurn();
+                        break;
+                    default:
+                            // if the command only requires an output (doesn't interact with the game)
+                            // it gets redirected to the output generator
+                            output.add(outputGenerator.generate(gameAction, currentGame, 0));
                 }
             }
         }
