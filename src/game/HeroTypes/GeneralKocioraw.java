@@ -3,13 +3,13 @@ package game.HeroTypes;
 import fileio.CardInput;
 import game.Hero;
 
-public class GeneralKocioraw extends Hero {
-    public GeneralKocioraw(CardInput input) {
+public final class GeneralKocioraw extends Hero {
+    public GeneralKocioraw(final CardInput input) {
         super(input);
     }
 
     @Override
-    public void useAbility(int targetRow) {
+    public void useAbility(final int targetRow) {
         super.useAbility(targetRow);
     }
 }

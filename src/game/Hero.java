@@ -5,17 +5,25 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 
-public class Hero extends Card{
+public class Hero extends Card {
     private final int maxHp = 30;
 
-    public Hero(CardInput input) {
+    public Hero(final CardInput input) {
         super(input);
         this.setHealth(maxHp);
     }
 
-    // will be overridden in each hero type subclass
-    public void useAbility(int targetRow) {}
+    /**
+     * Use the ability of the hero
+     * @param targetRow The row that the ability is used on
+     */
+    public void useAbility(final int targetRow) { }
 
+    /**
+     * Transforms the data of a Hero into an JSON object node to be used
+     * for the output of the program
+     * @return The Hero data in JSON format
+     */
     @Override
     public ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();

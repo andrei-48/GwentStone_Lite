@@ -3,13 +3,13 @@ package game.HeroTypes;
 import fileio.CardInput;
 import game.Hero;
 
-public class LordRoyce extends Hero {
-    public LordRoyce(CardInput input) {
+public final class LordRoyce extends Hero {
+    public LordRoyce(final CardInput input) {
         super(input);
     }
 
     @Override
-    public void useAbility(int targetRow) {
+    public void useAbility(final int targetRow) {
         super.useAbility(targetRow);
     }
 }

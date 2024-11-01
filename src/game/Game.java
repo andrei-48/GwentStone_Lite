@@ -1,5 +1,6 @@
 package game;
 
+import fileio.Coordinates;
 import fileio.DecksInput;
 import fileio.StartGameInput;
 import game.HeroTypes.EmpressThorina;
@@ -12,7 +13,7 @@ import java.util.Random;
 
 import static java.util.Collections.shuffle;
 
-public class Game {
+public final class Game {
     private ArrayList<ArrayList<MinionCard>> board;
     private final int startingPlayer;
     private int currentRound;
@@ -25,7 +26,8 @@ public class Game {
     private static final int MAX_ROWS = 4;
     private static final int MAX_CARDS_ON_ROW = 5;
 
-    public Game(StartGameInput gameInput, DecksInput playerOneDecks, DecksInput playerTwoDecks) {
+    public Game(final StartGameInput gameInput,
+                final DecksInput playerOneDecks, final DecksInput playerTwoDecks) {
         this.startingPlayer = gameInput.getStartingPlayer();
         this.currentPlayer = startingPlayer;
         this.currentRound = 1;
@@ -39,11 +41,13 @@ public class Game {
         // set the decks for each player
         for (int i = 0; i < playerOneDecks.getNrCardsInDeck(); i++) {
             playerOneDeck.add(new
-                    MinionCard(playerOneDecks.getDecks().get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    MinionCard(playerOneDecks.getDecks().
+                    get(gameInput.getPlayerOneDeckIdx()).get(i)));
         }
         for (int i = 0; i < playerTwoDecks.getNrCardsInDeck(); i++) {
             playerTwoDeck.add(new
-                    MinionCard(playerTwoDecks.getDecks().get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    MinionCard(playerTwoDecks.getDecks().
+                    get(gameInput.getPlayerTwoDeckIdx()).get(i)));
         }
 
         // shuffle the decks
@@ -71,6 +75,8 @@ public class Game {
                 playerOne = new Player(playerOneDeck,
                         new GeneralKocioraw(gameInput.getPlayerOneHero()));
                 break;
+            default:
+                break;
         }
 
         // set playerTwo hero
@@ -91,17 +97,24 @@ public class Game {
                 playerTwo = new Player(playerTwoDeck,
                         new GeneralKocioraw(gameInput.getPlayerTwoHero()));
                 break;
+            default:
+                break;
         }
         playerOne.drawCard();
         playerTwo.drawCard();
     }
 
-
-    public Player getPlayer(int idx) {
-        if (idx == 1)
+    /**
+     * Returns a player object based on the given index (must be 1 or 2)
+     * @param idx The index of the player (1 or 2)
+     * @return The player object corresponding to the index
+     */
+    public Player getPlayer(final int idx) {
+        if (idx == 1) {
             return playerOne;
-        else
+        } else {
             return playerTwo;
+        }
     }
 
     private void newRound() {
@@ -111,10 +124,19 @@ public class Game {
         playerOne.drawCard();
         playerTwo.drawCard();
         currentPlayer = startingPlayer;
+        for (ArrayList<MinionCard> row : board) {
+            for (MinionCard card : row) {
+                card.resetAttacked();
+            }
+        }
     }
 
+    /**
+     * Ends a player turn and changes the current player.
+     * Also switches to a new round if both players ended their turn
+     */
     public void endTurn() {
-        if(currentPlayer == startingPlayer && startingPlayer == 1) {
+        if (currentPlayer == startingPlayer && startingPlayer == 1) {
             currentPlayer = 2;
         } else if (currentPlayer == startingPlayer && startingPlayer == 2) {
             currentPlayer = 1;
@@ -123,19 +145,60 @@ public class Game {
         }
     }
 
+    /**
+     * Returns the object of the player whose turn it is
+     * @return The player object
+     */
     public Player getCurrentPlayer() {
         return this.getPlayer(this.currentPlayer);
     }
 
+    /**
+     * Return the index of the player whose turn it is
+     * @return The index of the player (1 or 2)
+     */
     public int getPlayerTurn() {
         return currentPlayer;
     }
 
+    /**
+     * Returns the board in it's current state
+     * @return The board object (an arraylist of arraylists of cards)
+     */
     public ArrayList<ArrayList<MinionCard>> getBoard() {
         return board;
     }
 
-    public boolean checkCardPlace(MinionCard card) {
+    /**
+     * Checks if a card exists on the table on a given position
+     * @param x The row that needs to be looked on
+     * @param y The position of the card on the row
+     * @return True if there is a card on the given position, false otherwise
+     */
+    public boolean cardExists(final int x, final int y) {
+        return x < MAX_ROWS && y < board.get(x).size();
+    }
+
+    /**
+     * Returns the object of a MinionCard in a given position
+     * !!Doesn't check if the card exists!!
+     * @param x The row of the card
+     * @param y The position of the card on the row
+     * @return The MinionCard object
+     */
+    public MinionCard getCard(final int x, final int y) {
+        if (x < board.size() && y < board.get(x).size()) {
+            return board.get(x).get(y);
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the card can be placed on it's required row
+     * @param card The card that needs to be placed
+     * @return True if the card can be placed, False otherwise
+     */
+    public boolean checkCardPlace(final MinionCard card) {
         if (currentPlayer == 1) {
             if (card.isFrontRow()) {
                 return board.get(Player.PLAYER_ONE_FRONT).size() < MAX_CARDS_ON_ROW;
@@ -151,7 +214,50 @@ public class Game {
         }
     }
 
-    public boolean checkCardMana(MinionCard card) {
+    /**
+     * Checks if the current player has enough mana to place a card
+     * @param card The card that needs to be placed
+     * @return True if the player has enough mana, False otherwise
+     */
+    public boolean checkCardMana(final MinionCard card) {
         return getCurrentPlayer().getMana() >= card.getMana();
+    }
+
+    /**
+     * Checks if the selected card is owned by the opponent
+     * @param attackedCard That card that should be attacked
+     * @return True if the opponent owns the card, False otherwise
+     */
+    public boolean isEnemy(final Coordinates attackedCard) {
+        if (currentPlayer == 1 && (attackedCard.getX() == Player.PLAYER_TWO_BACK
+                || attackedCard.getX() == Player.PLAYER_TWO_FRONT)) {
+            return true;
+        } else {
+            return currentPlayer == 2 && (attackedCard.getX() == Player.PLAYER_ONE_BACK
+                    || attackedCard.getX() == Player.PLAYER_ONE_FRONT);
+        }
+    }
+
+    /**
+     * Checks if the opponent has a 'Tank' minion on the table
+     * @return True if the opponent has a 'Tank', False otherwise
+     */
+    public boolean opponentHasTank() {
+        if (currentPlayer == 1) {
+            ArrayList<MinionCard> playerTwoFrontRow = board.get(Player.PLAYER_TWO_FRONT);
+            for (MinionCard card : playerTwoFrontRow) {
+                if (card.isTank()) {
+                    return true;
+                }
+            }
+        } else if (currentPlayer == 2) {
+            ArrayList<MinionCard> playerOneFrontRow = board.get(Player.PLAYER_ONE_FRONT);
+            for (MinionCard card : playerOneFrontRow) {
+                if (card.isTank()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

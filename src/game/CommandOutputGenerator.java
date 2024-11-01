@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.ActionsInput;
+import fileio.Coordinates;
 
 import java.util.ArrayList;
 
@@ -11,8 +12,12 @@ public class CommandOutputGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
     private final int manaErr = 1;
     private final int placeErr = 2;
+    private final int notTankErr = 3;
+    private final int frozenErr = 4;
+    private final int attackedErr = 5;
+    private final int notEnemyErr = 6;
 
-    private ArrayNode getPlayerDeck(Player player) {
+    private ArrayNode getPlayerDeck(final Player player) {
         ArrayList<MinionCard> deck = player.getDeck();
 
         ArrayNode playerDeck = mapper.createArrayNode();
@@ -22,7 +27,7 @@ public class CommandOutputGenerator {
         return playerDeck;
     }
 
-    private ArrayNode getPlayerHand(Player player) {
+    private ArrayNode getPlayerHand(final Player player) {
         ArrayList<MinionCard> hand = player.getHand();
         ArrayNode playerHand = mapper.createArrayNode();
         for (MinionCard card : hand) {
@@ -31,7 +36,7 @@ public class CommandOutputGenerator {
         return playerHand;
     }
 
-    private ArrayNode getCardsOnTable(ArrayList<ArrayList<MinionCard>> board) {
+    private ArrayNode getCardsOnTable(final ArrayList<ArrayList<MinionCard>> board) {
         ArrayNode cardsOnTable = mapper.createArrayNode();
         for (ArrayList<MinionCard> row : board) {
             ArrayNode cardsOnRow = mapper.createArrayNode();
@@ -44,6 +49,25 @@ public class CommandOutputGenerator {
         return cardsOnTable;
     }
 
+    private ObjectNode coordsNode(final Coordinates coordinates) {
+        ObjectNode coordsNode = mapper.createObjectNode();
+        coordsNode.put("x", coordinates.getX());
+        coordsNode.put("y", coordinates.getY());
+        return coordsNode;
+    }
+
+    private String errMessage(final int err) {
+        return switch (err) {
+            case manaErr -> "Not enough mana to place card on table.";
+            case placeErr -> "Cannot place card on table since row is full.";
+            case notTankErr -> "Attacked card is not of type 'Tank'.";
+            case frozenErr -> "Attacker card is frozen.";
+            case attackedErr -> "Attacker card has already attacked this turn.";
+            case notEnemyErr -> "Attacked card does not belong to the enemy.";
+            default -> "Unknown error.";
+        };
+    }
+
     /**
      * Generates the JSON objectNode for the output of each command (normal output or error)
      * @param action The current action from the input
@@ -51,7 +75,7 @@ public class CommandOutputGenerator {
      * @param err Error code to print appropriate error message
      * @return The JSON objectNode with the required output
      */
-    public ObjectNode generate(ActionsInput action, Game game, final int err) {
+    public ObjectNode generate(final ActionsInput action, final Game game, final int err) {
         ObjectNode commandOutput = mapper.createObjectNode();
         switch (action.getCommand()) {
             case "getPlayerDeck":
@@ -62,7 +86,8 @@ public class CommandOutputGenerator {
             case "getPlayerHero":
                 commandOutput.put("command", "getPlayerHero");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
-                commandOutput.put("output", game.getPlayer(action.getPlayerIdx()).getHero().toJson());
+                commandOutput.put("output",
+                        game.getPlayer(action.getPlayerIdx()).getHero().toJson());
                 break;
             case "getPlayerTurn":
                 commandOutput.put("command", "getPlayerTurn");
@@ -71,10 +96,7 @@ public class CommandOutputGenerator {
             case "placeCard":
                 commandOutput.put("command", "placeCard");
                 commandOutput.put("handIdx", action.getHandIdx());
-                if (err == manaErr) {
-                    commandOutput.put("error", "Not enough mana to place card on table.");
-                } else if (err == placeErr)
-                    commandOutput.put("error", "Cannot place card on table since row is full.");
+                commandOutput.put("error", errMessage(err));
                 break;
             case "getCardsInHand":
                 commandOutput.put("command", "getCardsInHand");
@@ -90,7 +112,24 @@ public class CommandOutputGenerator {
                 commandOutput.put("playerIdx", action.getPlayerIdx());
                 commandOutput.put("output", game.getPlayer(action.getPlayerIdx()).getMana());
                 break;
-
+            case "cardUsesAttack":
+                commandOutput.put("command", "cardUsesAttack");
+                commandOutput.put("cardAttacker", coordsNode(action.getCardAttacker()));
+                commandOutput.put("cardAttacked", coordsNode(action.getCardAttacked()));
+                commandOutput.put("error", errMessage(err));
+                break;
+            case "getCardAtPosition":
+                commandOutput.put("command", "getCardAtPosition");
+                commandOutput.put("x", action.getX());
+                commandOutput.put("y", action.getY());
+                if (game.cardExists(action.getX(), action.getY())) {
+                    commandOutput.put("output",
+                            game.getCard(action.getX(), action.getY()).toJson());
+                } else {
+                    commandOutput.put("output", "No card available at that position.");
+                }
+            default:
+                break;
         }
         return commandOutput;
     }
