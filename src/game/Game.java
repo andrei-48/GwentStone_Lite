@@ -30,15 +30,15 @@ public final class Game {
     private static final int MAX_ROWS = 4;
     private static final int MAX_CARDS_ON_ROW = 5;
 
-    public Game(final StartGameInput gameInput,
-                final DecksInput playerOneDecks, final DecksInput playerTwoDecks) {
-        this.startingPlayer = gameInput.getStartingPlayer();
-        this.currentPlayer = startingPlayer;
-        this.currentRound = 1;
-        this.board = new ArrayList<>();
-        for (int i = 0; i < MAX_ROWS; i++) {
-            board.add(new ArrayList<>());
-        }
+
+    /**
+     * Creates the decks arraylists for both players
+     * @param gameInput The input for the current game
+     * @param playerOneDecks The deck input for player one
+     * @param playerTwoDecks The deck input for player two
+     */
+    private void createDecks(final StartGameInput gameInput,
+                             final DecksInput playerOneDecks, final DecksInput playerTwoDecks) {
         this.playerOneDeck = new ArrayList<>();
         this.playerTwoDeck = new ArrayList<>();
 
@@ -105,6 +105,69 @@ public final class Game {
                     break;
             }
         }
+    }
+
+    /**
+     * Gives both players their decks and sets their hero
+     * @param gameInput The input for the current game
+     */
+    private void setPlayers(final StartGameInput gameInput) {
+        // set playerOne hero and give deck
+        switch (gameInput.getPlayerOneHero().getName()) {
+            case "Lord Royce":
+                this.playerOne = new Player(playerOneDeck,
+                        new LordRoyce(gameInput.getPlayerOneHero()));
+                break;
+            case "Empress Thorina":
+                this.playerOne = new Player(playerOneDeck,
+                        new EmpressThorina(gameInput.getPlayerOneHero()));
+                break;
+            case "King Mudface":
+                this.playerOne = new Player(playerOneDeck,
+                        new KingMudface(gameInput.getPlayerOneHero()));
+                break;
+            case "General Kocioraw":
+                this.playerOne = new Player(playerOneDeck,
+                        new GeneralKocioraw(gameInput.getPlayerOneHero()));
+                break;
+            default:
+                break;
+        }
+
+        // set playerTwo hero and give deck
+        switch (gameInput.getPlayerTwoHero().getName()) {
+            case "Lord Royce":
+                this.playerTwo = new Player(playerTwoDeck,
+                        new LordRoyce(gameInput.getPlayerTwoHero()));
+                break;
+            case "Empress Thorina":
+                this.playerTwo = new Player(playerTwoDeck,
+                        new EmpressThorina(gameInput.getPlayerTwoHero()));
+                break;
+            case "King Mudface":
+                this.playerTwo = new Player(playerTwoDeck,
+                        new KingMudface(gameInput.getPlayerTwoHero()));
+                break;
+            case "General Kocioraw":
+                this.playerTwo = new Player(playerTwoDeck,
+                        new GeneralKocioraw(gameInput.getPlayerTwoHero()));
+                break;
+            default:
+                break;
+        }
+    }
+
+    public Game(final StartGameInput gameInput,
+                final DecksInput playerOneDecks, final DecksInput playerTwoDecks) {
+        this.startingPlayer = gameInput.getStartingPlayer();
+        this.currentPlayer = startingPlayer;
+        this.currentRound = 1;
+        this.board = new ArrayList<>();
+        for (int i = 0; i < MAX_ROWS; i++) {
+            board.add(new ArrayList<>());
+        }
+
+        this.createDecks(gameInput, playerOneDecks, playerTwoDecks);
 
         // shuffle the decks
         Random rand;
@@ -113,49 +176,8 @@ public final class Game {
         rand = new Random(gameInput.getShuffleSeed());
         shuffle(playerTwoDeck, rand);
 
-        // set playerOne hero
-        switch (gameInput.getPlayerOneHero().getName()) {
-            case "Lord Royce":
-                playerOne = new Player(playerOneDeck,
-                        new LordRoyce(gameInput.getPlayerOneHero()));
-                break;
-            case "Empress Thorina":
-                playerOne = new Player(playerOneDeck,
-                        new EmpressThorina(gameInput.getPlayerOneHero()));
-                break;
-            case "King Mudface":
-                playerOne = new Player(playerOneDeck,
-                        new KingMudface(gameInput.getPlayerOneHero()));
-                break;
-            case "General Kocioraw":
-                playerOne = new Player(playerOneDeck,
-                        new GeneralKocioraw(gameInput.getPlayerOneHero()));
-                break;
-            default:
-                break;
-        }
+        this.setPlayers(gameInput);
 
-        // set playerTwo hero
-        switch (gameInput.getPlayerTwoHero().getName()) {
-            case "Lord Royce":
-                playerTwo = new Player(playerTwoDeck,
-                        new LordRoyce(gameInput.getPlayerTwoHero()));
-                break;
-            case "Empress Thorina":
-                playerTwo = new Player(playerTwoDeck,
-                        new EmpressThorina(gameInput.getPlayerTwoHero()));
-                break;
-            case "King Mudface":
-                playerTwo = new Player(playerTwoDeck,
-                        new KingMudface(gameInput.getPlayerTwoHero()));
-                break;
-            case "General Kocioraw":
-                playerTwo = new Player(playerTwoDeck,
-                        new GeneralKocioraw(gameInput.getPlayerTwoHero()));
-                break;
-            default:
-                break;
-        }
         playerOne.drawCard();
         playerTwo.drawCard();
     }
@@ -315,5 +337,17 @@ public final class Game {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the hero of the current player's opponent
+     * @return The hero of the opponent
+     */
+    public Hero getOpponentHero() {
+        if (currentPlayer == 1) {
+            return playerTwo.getHero();
+        } else {
+            return playerOne.getHero();
+        }
     }
 }

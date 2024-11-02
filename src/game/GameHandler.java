@@ -117,6 +117,36 @@ public final class GameHandler {
         }
         return -1;
     }
+
+    /**
+     * Checks every possible error for a card attack on enemy hero and returns the right error code
+     * @param currentGame The game in its current state
+     * @param gameAction The current action
+     * @return The error code if there is an error with the attack or 0 if the attack can be done
+     */
+    private int checkHeroAttack(final Game currentGame, final ActionsInput gameAction) {
+        MinionCard attacker = currentGame.
+                getCard(gameAction.getCardAttacker().getX(),
+                        gameAction.getCardAttacker().getY());
+        if (attacker != null) {
+            if (attacker.isFrozen()) {
+                return frozenErr;
+            }
+            if (attacker.hasAttacked()) {
+                return attackedErr;
+            }
+            if (currentGame.opponentHasTank()) {
+                return notTankErr;
+            }
+            return 0;
+        }
+        return -1;
+    }
+
+    private boolean checkGameEnded(final Game currentGame) {
+        return currentGame.getOpponentHero().getHealth() <= 0;
+    }
+
     /**
      * Takes the input associated to the instance and does the appropriate task required by it
      * @param output The output array in JSON format with every required field
@@ -141,14 +171,15 @@ public final class GameHandler {
                             output.add(outputGenerator.generate(gameAction, currentGame, error));
                         }
                         break;
+
                     case "endPlayerTurn":
                         currentGame.endTurn();
                         break;
+
                     case "cardUsesAttack":
                         error = checkCardAttack(currentGame, gameAction);
                         if (error == 0) {
-                            currentGame.
-                                    getCard(gameAction.getCardAttacker().getX(),
+                            currentGame.getCard(gameAction.getCardAttacker().getX(),
                                             gameAction.getCardAttacker().getY()).
                                     attack(gameAction.getCardAttacked(),
                                         currentGame.getBoard().
@@ -157,11 +188,11 @@ public final class GameHandler {
                             output.add(outputGenerator.generate(gameAction, currentGame, error));
                         }
                         break;
+
                     case "cardUsesAbility":
                         error = checkCardAbility(currentGame, gameAction);
                         if (error == 0) {
-                            currentGame.
-                                    getCard(gameAction.getCardAttacker().getX(),
+                            currentGame.getCard(gameAction.getCardAttacker().getX(),
                                             gameAction.getCardAttacker().getY()).
                                     useAbility(gameAction.getCardAttacked(),
                                             currentGame.getBoard().
@@ -170,6 +201,22 @@ public final class GameHandler {
                             output.add(outputGenerator.generate(gameAction, currentGame, error));
                         }
                         break;
+
+                    case "useAttackHero":
+                        error = checkHeroAttack(currentGame, gameAction);
+                        if (error == 0) {
+                            currentGame.getCard(gameAction.getCardAttacker().getX(),
+                                    gameAction.getCardAttacker().getY()).
+                                    attackHero(currentGame.getOpponentHero());
+                            if (checkGameEnded(currentGame)) {
+                                incrementWins(currentGame.getPlayerTurn());
+                                output.add(outputGenerator.generate(gameAction, currentGame, 0));
+                            }
+                        } else {
+                            output.add(outputGenerator.generate(gameAction, currentGame, error));
+                        }
+                        break;
+
                     default:
                             // if the command only requires an output
                             // (doesn't interact with the game)
@@ -181,17 +228,15 @@ public final class GameHandler {
     }
 
     /**
-     * Increases the amount of games won by PlayerOne
+     * Increases the amount of games won by the current player
+     * @param currentPlayer The index of the current player (1 or 2)
      */
-    public void incrementPlayerOneWins() {
-        this.playerOneWins++;
-    }
-
-    /**
-     * Increases the amount of games won by PlayerTwo
-     */
-    public void incrementPlayerTwoWins() {
-        this.playerTwoWins++;
+    public void incrementWins(final int currentPlayer) {
+        if (currentPlayer == 1) {
+            this.playerOneWins++;
+        } else {
+            this.playerTwoWins++;
+        }
     }
 
     /**

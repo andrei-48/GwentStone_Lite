@@ -95,6 +95,15 @@ public class MinionCard extends Card {
     }
 
     /**
+     * Uses the attack on the enemy hero
+     * @param hero The enemy's hero
+     */
+    public void attackHero(final Hero hero) {
+        hero.setHealth(hero.getHealth() - this.getAttackDamage());
+        this.setAttacked();
+    }
+
+    /**
      * Uses the card's ability on another card
      * Method is overridden in every special minion type class !!!
      * @param attackedCoord The coordinates of the attacked card

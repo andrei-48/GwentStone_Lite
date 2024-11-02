@@ -71,6 +71,19 @@ public class CommandOutputGenerator {
     }
 
     /**
+     * Takes the current game state and returns the right message for the winner
+     * @param game The game's current state
+     * @return The message for the winner
+     */
+    private String gameWonMessage(final Game game) {
+        if (game.getPlayerTurn() == 1) {
+            return "Player one killed the enemy hero.";
+        } else {
+            return "Player two killed the enemy hero.";
+        }
+    }
+
+    /**
      * Generates the JSON objectNode for the output of each command (normal output or error)
      * @param action The current action from the input
      * @param game The current game
@@ -85,47 +98,56 @@ public class CommandOutputGenerator {
                 commandOutput.put("playerIdx", action.getPlayerIdx());
                 commandOutput.set("output", getPlayerDeck(game.getPlayer(action.getPlayerIdx())));
                 break;
+
             case "getPlayerHero":
                 commandOutput.put("command", "getPlayerHero");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
                 commandOutput.set("output",
                         game.getPlayer(action.getPlayerIdx()).getHero().toJson());
                 break;
+
             case "getPlayerTurn":
                 commandOutput.put("command", "getPlayerTurn");
                 commandOutput.put("output", game.getPlayerTurn());
                 break;
+
             case "placeCard":
                 commandOutput.put("command", "placeCard");
                 commandOutput.put("handIdx", action.getHandIdx());
                 commandOutput.put("error", errMessage(err));
                 break;
+
             case "getCardsInHand":
                 commandOutput.put("command", "getCardsInHand");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
                 commandOutput.set("output", getPlayerHand(game.getPlayer(action.getPlayerIdx())));
                 break;
+
             case "getCardsOnTable":
                 commandOutput.put("command", "getCardsOnTable");
                 commandOutput.set("output", getCardsOnTable(game.getBoard()));
                 break;
+
             case "getPlayerMana":
                 commandOutput.put("command", "getPlayerMana");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
                 commandOutput.put("output", game.getPlayer(action.getPlayerIdx()).getMana());
                 break;
+
             case "cardUsesAttack":
                 commandOutput.put("command", "cardUsesAttack");
                 commandOutput.set("cardAttacker", coordsNode(action.getCardAttacker()));
                 commandOutput.set("cardAttacked", coordsNode(action.getCardAttacked()));
                 commandOutput.put("error", errMessage(err));
                 break;
+
             case "cardUsesAbility":
                 commandOutput.put("command", "cardUsesAbility");
                 commandOutput.set("cardAttacker", coordsNode(action.getCardAttacker()));
                 commandOutput.set("cardAttacked", coordsNode(action.getCardAttacked()));
                 commandOutput.put("error", errMessage(err));
                 break;
+
             case "getCardAtPosition":
                 commandOutput.put("command", "getCardAtPosition");
                 commandOutput.put("x", action.getX());
@@ -136,6 +158,18 @@ public class CommandOutputGenerator {
                 } else {
                     commandOutput.put("output", "No card available at that position.");
                 }
+                break;
+
+            case "useAttackHero":
+                if (err != 0) {
+                    commandOutput.put("command", "useAttackHero");
+                    commandOutput.set("cardAttacker", coordsNode(action.getCardAttacker()));
+                    commandOutput.put("error", errMessage(err));
+                } else {
+                    commandOutput.put("gameEnded", gameWonMessage(game));
+                }
+                break;
+
             default:
                 break;
         }
