@@ -1,8 +1,5 @@
 package game;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 
 import java.util.ArrayList;
@@ -39,7 +36,7 @@ public class Card {
      * Change the health of a card (used for dealing damage/healing)
      * @param health The new health amount
      */
-    public void setHealth(int health) {
+    public void setHealth(final int health) {
         this.health = health;
     }
 
@@ -64,7 +61,7 @@ public class Card {
      * (used for abilities that influence the attack damage)
      * @param attackDamage The new amount of attack damage
      */
-    public void setAttackDamage(int attackDamage) {
+    public void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
@@ -90,26 +87,5 @@ public class Card {
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Transforms the data of a card into an JSON object node to be used
-     * for the output of the program
-     * @return The card data in JSON format
-     */
-    public ObjectNode toJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode node = mapper.createObjectNode();
-        node.put("mana", mana);
-        node.put("attackDamage", attackDamage);
-        node.put("health", health);
-        node.put("description", description);
-        ArrayNode colorsNode = mapper.createArrayNode();
-        for (String color : colors) {
-            colorsNode.add(color);
-        }
-        node.put("colors", colorsNode);
-        node.put("name", name);
-        return node;
     }
 }

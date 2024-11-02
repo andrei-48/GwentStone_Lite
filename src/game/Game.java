@@ -7,6 +7,10 @@ import game.HeroTypes.EmpressThorina;
 import game.HeroTypes.GeneralKocioraw;
 import game.HeroTypes.KingMudface;
 import game.HeroTypes.LordRoyce;
+import game.SpecialMinions.Disciple;
+import game.SpecialMinions.Miraj;
+import game.SpecialMinions.TheCursedOne;
+import game.SpecialMinions.TheRipper;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,14 +44,66 @@ public final class Game {
 
         // set the decks for each player
         for (int i = 0; i < playerOneDecks.getNrCardsInDeck(); i++) {
-            playerOneDeck.add(new
-                    MinionCard(playerOneDecks.getDecks().
-                    get(gameInput.getPlayerOneDeckIdx()).get(i)));
+            String cardName = playerOneDecks.getDecks().
+                    get(gameInput.getPlayerOneDeckIdx()).get(i).getName();
+            switch (cardName) {
+                case "Disciple":
+                    playerOneDeck.add(new
+                            Disciple(playerOneDecks.getDecks().
+                            get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    break;
+                case "Miraj":
+                    playerOneDeck.add(new
+                            Miraj(playerOneDecks.getDecks().
+                            get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    break;
+                case "The Ripper":
+                    playerOneDeck.add(new
+                            TheRipper(playerOneDecks.getDecks().
+                            get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    break;
+                case "The Cursed One":
+                    playerOneDeck.add(new
+                            TheCursedOne(playerOneDecks.getDecks().
+                            get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    break;
+                default:
+                    playerOneDeck.add(new
+                            MinionCard(playerOneDecks.getDecks().
+                            get(gameInput.getPlayerOneDeckIdx()).get(i)));
+                    break;
+            }
         }
         for (int i = 0; i < playerTwoDecks.getNrCardsInDeck(); i++) {
-            playerTwoDeck.add(new
-                    MinionCard(playerTwoDecks.getDecks().
-                    get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+            String cardName = playerTwoDecks.getDecks().
+                    get(gameInput.getPlayerTwoDeckIdx()).get(i).getName();
+            switch (cardName) {
+                case "Disciple":
+                    playerTwoDeck.add(new
+                            Disciple(playerTwoDecks.getDecks().
+                            get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    break;
+                case "Miraj":
+                    playerTwoDeck.add(new
+                            Miraj(playerTwoDecks.getDecks().
+                            get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    break;
+                case "The Ripper":
+                    playerTwoDeck.add(new
+                            TheRipper(playerTwoDecks.getDecks().
+                            get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    break;
+                case "The Cursed One":
+                    playerTwoDeck.add(new
+                            TheCursedOne(playerTwoDecks.getDecks().
+                            get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    break;
+                default:
+                    playerTwoDeck.add(new
+                            MinionCard(playerTwoDecks.getDecks().
+                            get(gameInput.getPlayerTwoDeckIdx()).get(i)));
+                    break;
+            }
         }
 
         // shuffle the decks
@@ -225,7 +281,7 @@ public final class Game {
 
     /**
      * Checks if the selected card is owned by the opponent
-     * @param attackedCard That card that should be attacked
+     * @param attackedCard The card that should be attacked
      * @return True if the opponent owns the card, False otherwise
      */
     public boolean isEnemy(final Coordinates attackedCard) {

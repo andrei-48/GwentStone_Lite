@@ -16,6 +16,7 @@ public class CommandOutputGenerator {
     private final int frozenErr = 4;
     private final int attackedErr = 5;
     private final int notEnemyErr = 6;
+    private final int notAllyErr = 7;
 
     private ArrayNode getPlayerDeck(final Player player) {
         ArrayList<MinionCard> deck = player.getDeck();
@@ -64,6 +65,7 @@ public class CommandOutputGenerator {
             case frozenErr -> "Attacker card is frozen.";
             case attackedErr -> "Attacker card has already attacked this turn.";
             case notEnemyErr -> "Attacked card does not belong to the enemy.";
+            case notAllyErr -> "Attacked card does not belong to the current player.";
             default -> "Unknown error.";
         };
     }
@@ -81,12 +83,12 @@ public class CommandOutputGenerator {
             case "getPlayerDeck":
                 commandOutput.put("command", "getPlayerDeck");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
-                commandOutput.put("output", getPlayerDeck(game.getPlayer(action.getPlayerIdx())));
+                commandOutput.set("output", getPlayerDeck(game.getPlayer(action.getPlayerIdx())));
                 break;
             case "getPlayerHero":
                 commandOutput.put("command", "getPlayerHero");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
-                commandOutput.put("output",
+                commandOutput.set("output",
                         game.getPlayer(action.getPlayerIdx()).getHero().toJson());
                 break;
             case "getPlayerTurn":
@@ -101,11 +103,11 @@ public class CommandOutputGenerator {
             case "getCardsInHand":
                 commandOutput.put("command", "getCardsInHand");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
-                commandOutput.put("output", getPlayerHand(game.getPlayer(action.getPlayerIdx())));
+                commandOutput.set("output", getPlayerHand(game.getPlayer(action.getPlayerIdx())));
                 break;
             case "getCardsOnTable":
                 commandOutput.put("command", "getCardsOnTable");
-                commandOutput.put("output", getCardsOnTable(game.getBoard()));
+                commandOutput.set("output", getCardsOnTable(game.getBoard()));
                 break;
             case "getPlayerMana":
                 commandOutput.put("command", "getPlayerMana");
@@ -114,8 +116,14 @@ public class CommandOutputGenerator {
                 break;
             case "cardUsesAttack":
                 commandOutput.put("command", "cardUsesAttack");
-                commandOutput.put("cardAttacker", coordsNode(action.getCardAttacker()));
-                commandOutput.put("cardAttacked", coordsNode(action.getCardAttacked()));
+                commandOutput.set("cardAttacker", coordsNode(action.getCardAttacker()));
+                commandOutput.set("cardAttacked", coordsNode(action.getCardAttacked()));
+                commandOutput.put("error", errMessage(err));
+                break;
+            case "cardUsesAbility":
+                commandOutput.put("command", "cardUsesAbility");
+                commandOutput.set("cardAttacker", coordsNode(action.getCardAttacker()));
+                commandOutput.set("cardAttacked", coordsNode(action.getCardAttacked()));
                 commandOutput.put("error", errMessage(err));
                 break;
             case "getCardAtPosition":
@@ -123,7 +131,7 @@ public class CommandOutputGenerator {
                 commandOutput.put("x", action.getX());
                 commandOutput.put("y", action.getY());
                 if (game.cardExists(action.getX(), action.getY())) {
-                    commandOutput.put("output",
+                    commandOutput.set("output",
                             game.getCard(action.getX(), action.getY()).toJson());
                 } else {
                     commandOutput.put("output", "No card available at that position.");

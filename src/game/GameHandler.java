@@ -19,6 +19,7 @@ public final class GameHandler {
     private final int frozenErr = 4;
     private final int attackedErr = 5;
     private final int notEnemyErr = 6;
+    private final int notAllyErr = 7;
 
     public GameHandler(final Input input) {
         this.input = input;
@@ -26,26 +27,102 @@ public final class GameHandler {
         this.playerTwoWins = 0;
     }
 
-    private int checkCardAttack(Game currentGame, ActionsInput gameAction) {
-        int err = 0;
+    /**
+     * Checks every possible error for placing a cart and return the right error code
+     * @param currentGame The game in its current state
+     * @param gameAction The current action
+     * @return The error code if there is an error with the card placement
+     * or 0 if the card can be placed
+     */
+    private int checkCardPlacement(final Game currentGame, final ActionsInput gameAction) {
+        if (!currentGame.getCurrentPlayer().getHand().isEmpty()) {
+            MinionCard chosenCard = currentGame.getCurrentPlayer().getHand().
+                    get(gameAction.getHandIdx());
+            if (!currentGame.checkCardMana(chosenCard)) {
+                return manaErr;
+            }
+            if (!currentGame.checkCardPlace(chosenCard)) {
+                return placeErr;
+            }
+            return 0;
+        }
+        return -1;
+    }
+
+    /**
+     * Checks every possible error for a card attack and returns the right error code
+     * @param currentGame The game in its current state
+     * @param gameAction The current action
+     * @return The error code if there is an error with the attack or 0 if the attack can be done
+     */
+    private int checkCardAttack(final Game currentGame, final ActionsInput gameAction) {
         MinionCard attacker = currentGame.
                 getCard(gameAction.getCardAttacker().getX(),
                         gameAction.getCardAttacker().getY());
         MinionCard attacked = currentGame.
                 getCard(gameAction.getCardAttacked().getX(),
                         gameAction.getCardAttacked().getY());
-        if (currentGame.cardExists(gameAction.getCardAttacker().getX(),
-                gameAction.getCardAttacker().getY())
-                && currentGame.cardExists(gameAction.getCardAttacked().getX(),
-                gameAction.getCardAttacked().getY())) {
-            
+        if (attacker != null && attacked != null) {
+            if (!currentGame.isEnemy(gameAction.getCardAttacked())) {
+                return notEnemyErr;
+            }
+            if (attacker.hasAttacked()) {
+                return attackedErr;
+            }
+            if (attacker.isFrozen()) {
+                return frozenErr;
+            }
+            if (!attacked.isTank() && currentGame.opponentHasTank()) {
+                return notTankErr;
+            }
+            return 0;
         }
+        return -1;
+    }
+
+    /**
+     * Checks every possible error for a card ability use and returns the right error code
+     * @param currentGame The game in its current state
+     * @param gameAction The current action
+     * @return The error code if there is an error with the ability use
+     * or 0 if the ability can be used
+     */
+    private int checkCardAbility(final Game currentGame, final ActionsInput gameAction) {
+        MinionCard attacker = currentGame.
+                getCard(gameAction.getCardAttacker().getX(),
+                        gameAction.getCardAttacker().getY());
+        MinionCard attacked = currentGame.
+                getCard(gameAction.getCardAttacked().getX(),
+                        gameAction.getCardAttacked().getY());
+        if (attacker != null && attacked != null) {
+            if (attacker.isFrozen()) {
+                return frozenErr;
+            }
+            if (attacker.hasAttacked()) {
+                return attackedErr;
+            }
+            if (attacker.getName().equals("Disciple")) {
+                if (currentGame.isEnemy(gameAction.getCardAttacked())) {
+                    return notAllyErr;
+                }
+            } else {
+                if (!currentGame.isEnemy(gameAction.getCardAttacked())) {
+                    return notEnemyErr;
+                }
+                if (!attacked.isTank() && currentGame.opponentHasTank()) {
+                    return notTankErr;
+                }
+            }
+            return 0;
+        }
+        return -1;
     }
     /**
      * Takes the input associated to the instance and does the appropriate task required by it
      * @param output The output array in JSON format with every required field
      */
     public void handleInput(final ArrayNode output) {
+        int error;
         for (int i = 0; i < input.getGames().size(); i++) {
             GameInput currentGameInput = input.getGames().get(i);
             Game currentGame = new Game(currentGameInput.getStartGame(),
@@ -56,66 +133,47 @@ public final class GameHandler {
                 String command = gameAction.getCommand();
                 switch (command) {
                     case "placeCard":
-                        if (!currentGame.getCurrentPlayer().getHand().isEmpty()) {
-                            MinionCard chosenCard = currentGame.getCurrentPlayer().getHand().
-                                    get(gameAction.getHandIdx());
-                            if (currentGame.checkCardMana(chosenCard)) {
-                                if (currentGame.checkCardPlace(chosenCard)) {
-                                    currentGame.getCurrentPlayer().
-                                            placeCard(gameAction.getHandIdx(), currentGame);
-                                } else {
-                                    output.add(outputGenerator.
-                                            generate(gameAction, currentGame, placeErr));
-                                }
-                            } else {
-                                output.add(outputGenerator.
-                                        generate(gameAction, currentGame, manaErr));
-                            }
+                        error = checkCardPlacement(currentGame, gameAction);
+                        if (error == 0) {
+                            currentGame.getCurrentPlayer().
+                                    placeCard(gameAction.getHandIdx(), currentGame);
+                        } else {
+                            output.add(outputGenerator.generate(gameAction, currentGame, error));
                         }
                         break;
                     case "endPlayerTurn":
                         currentGame.endTurn();
                         break;
                     case "cardUsesAttack":
-                        MinionCard attacker = currentGame.
-                                getCard(gameAction.getCardAttacker().getX(),
-                                        gameAction.getCardAttacker().getY());
-                        MinionCard attacked = currentGame.
-                                getCard(gameAction.getCardAttacked().getX(),
-                                        gameAction.getCardAttacked().getY());
-                        if (currentGame.cardExists(gameAction.getCardAttacker().getX(),
-                                gameAction.getCardAttacker().getY())
-                            && currentGame.cardExists(gameAction.getCardAttacked().getX(),
-                                gameAction.getCardAttacked().getY())) {
-                            if (currentGame.isEnemy(gameAction.getCardAttacked())) {
-                                if (!attacker.hasAttacked()) {
-                                   if (!attacker.isFrozen()) {
-                                      if (attacked.isTank() || !currentGame.opponentHasTank()) {
-                                         attacker.attack(gameAction.getCardAttacked(),
-                                                 currentGame.getBoard().
-                                                         get(gameAction.getCardAttacked().getX()));
-                                       } else {
-                                            output.add(outputGenerator.
-                                                    generate(gameAction, currentGame, notTankErr));
-                                        }
-                                } else {
-                                      output.add(outputGenerator.
-                                              generate(gameAction, currentGame, frozenErr));
-                                 }
-                                } else {
-                                    output.add(outputGenerator.
-                                            generate(gameAction, currentGame, attackedErr));
-                                }
-                            } else {
-                                output.add(outputGenerator.
-                                        generate(gameAction, currentGame, notEnemyErr));
-                            }
+                        error = checkCardAttack(currentGame, gameAction);
+                        if (error == 0) {
+                            currentGame.
+                                    getCard(gameAction.getCardAttacker().getX(),
+                                            gameAction.getCardAttacker().getY()).
+                                    attack(gameAction.getCardAttacked(),
+                                        currentGame.getBoard().
+                                            get(gameAction.getCardAttacked().getX()));
+                        } else {
+                            output.add(outputGenerator.generate(gameAction, currentGame, error));
+                        }
+                        break;
+                    case "cardUsesAbility":
+                        error = checkCardAbility(currentGame, gameAction);
+                        if (error == 0) {
+                            currentGame.
+                                    getCard(gameAction.getCardAttacker().getX(),
+                                            gameAction.getCardAttacker().getY()).
+                                    useAbility(gameAction.getCardAttacked(),
+                                            currentGame.getBoard().
+                                                    get(gameAction.getCardAttacked().getX()));
+                        } else {
+                            output.add(outputGenerator.generate(gameAction, currentGame, error));
                         }
                         break;
                     default:
                             // if the command only requires an output
                             // (doesn't interact with the game)
-                            // it gets redirected to the output generator
+                            // it gets redirected to the output generator without error
                             output.add(outputGenerator.generate(gameAction, currentGame, 0));
                 }
             }

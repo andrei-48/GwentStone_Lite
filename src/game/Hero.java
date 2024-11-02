@@ -24,7 +24,6 @@ public class Hero extends Card {
      * for the output of the program
      * @return The Hero data in JSON format
      */
-    @Override
     public ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
@@ -34,7 +33,7 @@ public class Hero extends Card {
         for (String color : this.getColors()) {
             colorsNode.add(color);
         }
-        node.put("colors", colorsNode);
+        node.set("colors", colorsNode);
         node.put("name", this.getName());
         node.put("health", this.getHealth());
         return node;

@@ -1,5 +1,8 @@
 package game;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 import fileio.Coordinates;
 
@@ -40,6 +43,13 @@ public class MinionCard extends Card {
     }
 
     /**
+     * Sets the current card as frozen
+     */
+    public void setFrozen() {
+        this.frozen = true;
+    }
+
+    /**
      * Checks if the card has to be placed on the front row
      * @return True if the card has to be placed on the front row, False otherwise
      */
@@ -62,17 +72,54 @@ public class MinionCard extends Card {
     public void resetAttacked() {
         attacked = false;
     }
+
+    /**
+     * Marks the card after attacking
+     */
+    public void setAttacked() {
+        this.attacked = true;
+    }
+
     /**
      * Uses the attack on another card
      * @param attackedCoord The coordinates of the attacked card
-     * @param row  The row of the attacked card
+     * @param row The row of the attacked card
      */
     public void attack(final Coordinates attackedCoord, final ArrayList<MinionCard> row) {
         MinionCard attackedCard = row.get(attackedCoord.getY());
         attackedCard.setHealth(attackedCard.getHealth() - this.getAttackDamage());
-        this.attacked = true;
+        this.setAttacked();
         if (attackedCard.getHealth() <= 0) {
             row.remove(attackedCard);
         }
+    }
+
+    /**
+     * Uses the card's ability on another card
+     * Method is overridden in every special minion type class !!!
+     * @param attackedCoord The coordinates of the attacked card
+     * @param row The row of the attacked card
+     */
+    public void useAbility(final Coordinates attackedCoord, final ArrayList<MinionCard> row) { }
+
+    /**
+     * Transforms the data of a card into an JSON object node to be used
+     * for the output of the program
+     * @return The card data in JSON format
+     */
+    public ObjectNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        node.put("mana", this.getMana());
+        node.put("attackDamage", this.getAttackDamage());
+        node.put("health", this.getHealth());
+        node.put("description", this.getDescription());
+        ArrayNode colorsNode = mapper.createArrayNode();
+        for (String color : this.getColors()) {
+            colorsNode.add(color);
+        }
+        node.set("colors", colorsNode);
+        node.put("name", this.getName());
+        return node;
     }
 }

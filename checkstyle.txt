@@ -1,6 +1,2 @@
 Starting audit...
-[ERROR] C:\Users\andym\POO\Tema_0\.\src\game\Card.java:42:27: Parameter health should be final. [FinalParameters]
-[ERROR] C:\Users\andym\POO\Tema_0\.\src\game\Card.java:67:33: Parameter attackDamage should be final. [FinalParameters]
-[ERROR] C:\Users\andym\POO\Tema_0\.\src\main\Main.java:9:8: Unused import - com.fasterxml.jackson.databind.node.ObjectNode. [UnusedImports]
 Audit done.
-Checkstyle ends with 3 errors.
