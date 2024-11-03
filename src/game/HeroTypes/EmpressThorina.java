@@ -12,7 +12,7 @@ public final class EmpressThorina extends Hero {
     }
 
     @Override
-    public void useAbility(ArrayList<MinionCard> targetRow) {
+    public void useAbility(final ArrayList<MinionCard> targetRow) {
         MinionCard minionTarget = targetRow.get(0);
         int maxHealth = minionTarget.getHealth();
         for (MinionCard minion : targetRow) {

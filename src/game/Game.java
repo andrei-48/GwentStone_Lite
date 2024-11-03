@@ -195,7 +195,7 @@ public final class Game {
         }
     }
 
-    private void clearFreeze(int playerIdx) {
+    private void clearFreeze(final int playerIdx) {
         if (playerIdx == 1) {
             for (int i = Player.PLAYER_ONE_FRONT; i <= Player.PLAYER_ONE_BACK; i++) {
                 for (MinionCard minion : board.get(i)) {
@@ -323,10 +323,15 @@ public final class Game {
      * Checks if the current player has enough mana to use the hero's ability
      * @return True if the player has enough mana, False otherwise
      */
-    public boolean checkHeroMana () {
+    public boolean checkHeroMana() {
         return getCurrentPlayer().getMana() >= getCurrentPlayer().getHero().getMana();
     }
 
+    /**
+     * Checks if the selected row in owned by the opponent of the current player
+     * @param row The selected row's index
+     * @return True if the opponent owns the row, False otherwise
+     */
     public boolean isEnemyRow(final int row) {
         if (currentPlayer == 1
                 && (row == Player.PLAYER_TWO_BACK || row == Player.PLAYER_TWO_FRONT)) {
@@ -338,7 +343,7 @@ public final class Game {
     }
 
     /**
-     * Checks if the selected card is owned by the opponent
+     * Checks if the selected card is owned by the opponent of the current player
      * @param attackedCard The card that should be attacked
      * @return True if the opponent owns the card, False otherwise
      */

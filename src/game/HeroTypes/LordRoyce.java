@@ -12,7 +12,7 @@ public final class LordRoyce extends Hero {
     }
 
     @Override
-    public void useAbility(ArrayList<MinionCard> targetRow) {
+    public void useAbility(final ArrayList<MinionCard> targetRow) {
         for (MinionCard minion : targetRow) {
             minion.setFrozen();
         }

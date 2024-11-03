@@ -1,6 +1,8 @@
 package game;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.ActionsInput;
 import fileio.GameInput;
 import fileio.Input;
@@ -13,17 +15,17 @@ public final class GameHandler {
     private int playerTwoWins;
     private final CommandOutputGenerator outputGenerator = new CommandOutputGenerator();
 
-    public static final int manaErr = 1;
-    public static final int placeErr = 2;
-    public static final int notTankErr = 3;
-    public static final int frozenErr = 4;
-    public static final int attackedErr = 5;
-    public static final int notEnemyErr = 6;
-    public static final int notAllyErr = 7;
-    public static final int heroManaErr = 8;
-    public static final int herroAttackedErr = 9;
-    public static final int notEnemyRowErr = 10;
-    public static final int notAllyRowErr = 11;
+    public static final int MANA_ERR = 1;
+    public static final int PLACE_ERR = 2;
+    public static final int NOT_TANK_ERR = 3;
+    public static final int FROZEN_ERR = 4;
+    public static final int ATTACKED_ERR = 5;
+    public static final int NOT_ENEMY_ERR = 6;
+    public static final int NOT_ALLY_ERR = 7;
+    public static final int HERO_MANA_ERR = 8;
+    public static final int HERRO_ATTACKED_ERR = 9;
+    public static final int ENEMY_ROW_ERR = 10;
+    public static final int ALLY_ROW_ERR = 11;
 
     public GameHandler(final Input input) {
         this.input = input;
@@ -43,10 +45,10 @@ public final class GameHandler {
             MinionCard chosenCard = currentGame.getCurrentPlayer().getHand().
                     get(gameAction.getHandIdx());
             if (!currentGame.checkCardMana(chosenCard)) {
-                return manaErr;
+                return MANA_ERR;
             }
             if (!currentGame.checkCardPlace(chosenCard)) {
-                return placeErr;
+                return PLACE_ERR;
             }
             return 0;
         }
@@ -68,16 +70,16 @@ public final class GameHandler {
                         gameAction.getCardAttacked().getY());
         if (attacker != null && attacked != null) {
             if (!currentGame.isEnemy(gameAction.getCardAttacked())) {
-                return notEnemyErr;
+                return NOT_ENEMY_ERR;
             }
             if (attacker.hasAttacked()) {
-                return attackedErr;
+                return ATTACKED_ERR;
             }
             if (attacker.isFrozen()) {
-                return frozenErr;
+                return FROZEN_ERR;
             }
             if (!attacked.isTank() && currentGame.opponentHasTank()) {
-                return notTankErr;
+                return NOT_TANK_ERR;
             }
             return 0;
         }
@@ -100,21 +102,21 @@ public final class GameHandler {
                         gameAction.getCardAttacked().getY());
         if (attacker != null && attacked != null) {
             if (attacker.isFrozen()) {
-                return frozenErr;
+                return FROZEN_ERR;
             }
             if (attacker.hasAttacked()) {
-                return attackedErr;
+                return ATTACKED_ERR;
             }
             if (attacker.getName().equals("Disciple")) {
                 if (currentGame.isEnemy(gameAction.getCardAttacked())) {
-                    return notAllyErr;
+                    return NOT_ALLY_ERR;
                 }
             } else {
                 if (!currentGame.isEnemy(gameAction.getCardAttacked())) {
-                    return notEnemyErr;
+                    return NOT_ENEMY_ERR;
                 }
                 if (!attacked.isTank() && currentGame.opponentHasTank()) {
-                    return notTankErr;
+                    return NOT_TANK_ERR;
                 }
             }
             return 0;
@@ -134,13 +136,13 @@ public final class GameHandler {
                         gameAction.getCardAttacker().getY());
         if (attacker != null) {
             if (attacker.isFrozen()) {
-                return frozenErr;
+                return FROZEN_ERR;
             }
             if (attacker.hasAttacked()) {
-                return attackedErr;
+                return ATTACKED_ERR;
             }
             if (currentGame.opponentHasTank()) {
-                return notTankErr;
+                return NOT_TANK_ERR;
             }
             return 0;
         }
@@ -154,18 +156,19 @@ public final class GameHandler {
     private int checkHeroAbility(final Game currentGame, final ActionsInput gameAction) {
         Hero playerHero = currentGame.getCurrentPlayer().getHero();
         if (!currentGame.checkHeroMana()) {
-            return heroManaErr;
+            return HERO_MANA_ERR;
         }
         if (playerHero.hasAttacked()) {
-            return herroAttackedErr;
+            return HERRO_ATTACKED_ERR;
         }
-        if (playerHero.getName().equals("Lord Royce") || playerHero.getName().equals("Empress Thorina")) {
+        if (playerHero.getName().equals("Lord Royce")
+                || playerHero.getName().equals("Empress Thorina")) {
             if (!currentGame.isEnemyRow(gameAction.getAffectedRow())) {
-                return notEnemyRowErr;
+                return ENEMY_ROW_ERR;
             }
         } else {
             if (currentGame.isEnemyRow(gameAction.getAffectedRow())) {
-                return notAllyRowErr;
+                return ALLY_ROW_ERR;
             }
         }
         return 0;
@@ -251,6 +254,17 @@ public final class GameHandler {
                         }
                         break;
 
+                    case "getTotalGamesPlayed":
+                        output.add(gamesPlayed());
+                        break;
+
+                    case "getPlayerOneWins":
+                        output.add(playerWins(1));
+                        break;
+                    case "getPlayerTwoWins":
+                        output.add(playerWins(2));
+                        break;
+
                     default:
                             // if the command only requires an output
                             // (doesn't interact with the game)
@@ -279,5 +293,26 @@ public final class GameHandler {
      */
     public int getGamesPlayed() {
         return this.playerOneWins + this.playerTwoWins;
+    }
+
+    private ObjectNode gamesPlayed() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode gamesPlayed = mapper.createObjectNode();
+        gamesPlayed.put("command", "getTotalGamesPlayed");
+        gamesPlayed.put("output", getGamesPlayed());
+        return gamesPlayed;
+    }
+
+    private ObjectNode playerWins(final int idx) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode playerWins = mapper.createObjectNode();
+        if (idx == 1) {
+            playerWins.put("command", "getPlayerOneWins");
+            playerWins.put("output", this.playerOneWins);
+        } else {
+            playerWins.put("command", "getPlayerTwoWins");
+            playerWins.put("output", this.playerTwoWins);
+        }
+        return playerWins;
     }
 }

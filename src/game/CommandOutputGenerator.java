@@ -65,17 +65,17 @@ public class CommandOutputGenerator {
 
     private String errMessage(final int err) {
         return switch (err) {
-            case GameHandler.manaErr -> "Not enough mana to place card on table.";
-            case GameHandler.placeErr -> "Cannot place card on table since row is full.";
-            case GameHandler.notTankErr -> "Attacked card is not of type 'Tank'.";
-            case GameHandler.frozenErr -> "Attacker card is frozen.";
-            case GameHandler.attackedErr -> "Attacker card has already attacked this turn.";
-            case GameHandler.notEnemyErr -> "Attacked card does not belong to the enemy.";
-            case GameHandler.notAllyErr -> "Attacked card does not belong to the current player.";
-            case GameHandler.heroManaErr -> "Not enough mana to use hero's ability.";
-            case GameHandler.herroAttackedErr -> "Hero has already attacked this turn.";
-            case GameHandler.notEnemyRowErr -> "Selected row does not belong to the enemy.";
-            case GameHandler.notAllyRowErr -> "Selected row does not belong to the current player.";
+            case GameHandler.MANA_ERR -> "Not enough mana to place card on table.";
+            case GameHandler.PLACE_ERR -> "Cannot place card on table since row is full.";
+            case GameHandler.NOT_TANK_ERR -> "Attacked card is not of type 'Tank'.";
+            case GameHandler.FROZEN_ERR -> "Attacker card is frozen.";
+            case GameHandler.ATTACKED_ERR -> "Attacker card has already attacked this turn.";
+            case GameHandler.NOT_ENEMY_ERR -> "Attacked card does not belong to the enemy.";
+            case GameHandler.NOT_ALLY_ERR -> "Attacked card does not belong to the current player.";
+            case GameHandler.HERO_MANA_ERR -> "Not enough mana to use hero's ability.";
+            case GameHandler.HERRO_ATTACKED_ERR -> "Hero has already attacked this turn.";
+            case GameHandler.ENEMY_ROW_ERR -> "Selected row does not belong to the enemy.";
+            case GameHandler.ALLY_ROW_ERR -> "Selected row does not belong to the current player.";
             default -> "Unknown error.";
         };
     }

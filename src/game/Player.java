@@ -37,7 +37,11 @@ public final class Player {
         return mana;
     }
 
-    public void useHeroAbility(ArrayList<MinionCard> targetRow) {
+    /**
+     * Uses the ability of the player's hero
+     * @param targetRow The row that the ability will be used on
+     */
+    public void useHeroAbility(final ArrayList<MinionCard> targetRow) {
         this.mana -= hero.getMana();
         hero.useAbility(targetRow);
     }

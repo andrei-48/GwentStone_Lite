@@ -19,7 +19,7 @@ public class Hero extends Card {
      * Use the ability of the hero
      * @param targetRow The row that the ability is used on
      */
-    public void useAbility(ArrayList<MinionCard> targetRow) { }
+    public void useAbility(final ArrayList<MinionCard> targetRow) { }
 
     /**
      * Transforms the data of a Hero into an JSON object node to be used
