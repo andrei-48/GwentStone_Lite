@@ -37,6 +37,11 @@ public final class Player {
         return mana;
     }
 
+    public void useHeroAbility(ArrayList<MinionCard> targetRow) {
+        this.mana -= hero.getMana();
+        hero.useAbility(targetRow);
+    }
+
     /**
      * Places a card with the given index from the hand on the board
      * @param idx the index of the card in hand

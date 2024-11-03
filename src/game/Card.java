@@ -11,6 +11,7 @@ public class Card {
     private String description;
     private ArrayList<String> colors;
     private String name;
+    private boolean attacked;
 
     public Card() {
     }
@@ -22,6 +23,7 @@ public class Card {
         this.description = cardInput.getDescription();
         this.colors = cardInput.getColors();
         this.name = cardInput.getName();
+        this.attacked = false;
     }
 
     /**
@@ -87,5 +89,28 @@ public class Card {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Checks if the card has attacked this round
+     * @return True if the card has attacked this round, False otherwise
+     */
+    public boolean hasAttacked() {
+        return attacked;
+    }
+
+    /**
+     * Used when starting a new round. Sets the 'attacked' field
+     * back to false
+     */
+    public void resetAttacked() {
+        attacked = false;
+    }
+
+    /**
+     * Marks the card after attacking
+     */
+    public void setAttacked() {
+        this.attacked = true;
     }
 }

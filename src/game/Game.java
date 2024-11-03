@@ -18,7 +18,7 @@ import java.util.Random;
 import static java.util.Collections.shuffle;
 
 public final class Game {
-    private ArrayList<ArrayList<MinionCard>> board;
+    private final ArrayList<ArrayList<MinionCard>> board;
     private final int startingPlayer;
     private int currentRound;
     private int currentPlayer;
@@ -195,6 +195,22 @@ public final class Game {
         }
     }
 
+    private void clearFreeze(int playerIdx) {
+        if (playerIdx == 1) {
+            for (int i = Player.PLAYER_ONE_FRONT; i <= Player.PLAYER_ONE_BACK; i++) {
+                for (MinionCard minion : board.get(i)) {
+                    minion.unsetFrozen();
+                }
+            }
+        } else {
+            for (int i = Player.PLAYER_TWO_BACK; i <= Player.PLAYER_TWO_FRONT; i++) {
+                for (MinionCard minion : board.get(i)) {
+                    minion.unsetFrozen();
+                }
+            }
+        }
+    }
+
     private void newRound() {
         currentRound++;
         playerOne.incMana(currentRound);
@@ -207,6 +223,8 @@ public final class Game {
                 card.resetAttacked();
             }
         }
+        playerOne.getHero().resetAttacked();
+        playerTwo.getHero().resetAttacked();
     }
 
     /**
@@ -214,6 +232,7 @@ public final class Game {
      * Also switches to a new round if both players ended their turn
      */
     public void endTurn() {
+        clearFreeze(currentPlayer);
         if (currentPlayer == startingPlayer && startingPlayer == 1) {
             currentPlayer = 2;
         } else if (currentPlayer == startingPlayer && startingPlayer == 2) {
@@ -240,7 +259,7 @@ public final class Game {
     }
 
     /**
-     * Returns the board in it's current state
+     * Returns the board in its current state
      * @return The board object (an arraylist of arraylists of cards)
      */
     public ArrayList<ArrayList<MinionCard>> getBoard() {
@@ -259,7 +278,6 @@ public final class Game {
 
     /**
      * Returns the object of a MinionCard in a given position
-     * !!Doesn't check if the card exists!!
      * @param x The row of the card
      * @param y The position of the card on the row
      * @return The MinionCard object
@@ -299,6 +317,24 @@ public final class Game {
      */
     public boolean checkCardMana(final MinionCard card) {
         return getCurrentPlayer().getMana() >= card.getMana();
+    }
+
+    /**
+     * Checks if the current player has enough mana to use the hero's ability
+     * @return True if the player has enough mana, False otherwise
+     */
+    public boolean checkHeroMana () {
+        return getCurrentPlayer().getMana() >= getCurrentPlayer().getHero().getMana();
+    }
+
+    public boolean isEnemyRow(final int row) {
+        if (currentPlayer == 1
+                && (row == Player.PLAYER_TWO_BACK || row == Player.PLAYER_TWO_FRONT)) {
+            return true;
+        } else {
+            return currentPlayer == 2
+                    && (row == Player.PLAYER_ONE_BACK || row == Player.PLAYER_ONE_FRONT);
+        }
     }
 
     /**

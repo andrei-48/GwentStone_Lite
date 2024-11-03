@@ -12,7 +12,7 @@ public class MinionCard extends Card {
     private final boolean tank;
     private boolean frozen;
     private final boolean frontRow;
-    private boolean attacked;
+
 
     public MinionCard(final CardInput cardInput) {
         super(cardInput);
@@ -23,7 +23,6 @@ public class MinionCard extends Card {
                 || cardInput.getName().equals("Warden")
                 || cardInput.getName().equals("The Ripper")
                 || cardInput.getName().equals("Miraj");
-        this.attacked = false;
     }
 
     /**
@@ -50,34 +49,18 @@ public class MinionCard extends Card {
     }
 
     /**
+     * Unfreezes the current card
+     */
+    public void unsetFrozen() {
+        this.frozen = false;
+    }
+
+    /**
      * Checks if the card has to be placed on the front row
      * @return True if the card has to be placed on the front row, False otherwise
      */
     public boolean isFrontRow() {
         return frontRow;
-    }
-
-    /**
-     * Checks if the card has attacked this round
-     * @return True if the card has attacked this round, False otherwise
-     */
-    public boolean hasAttacked() {
-        return attacked;
-    }
-
-    /**
-     * Used when starting a new round. Sets the 'attacked' field
-     * back to false
-     */
-    public void resetAttacked() {
-        attacked = false;
-    }
-
-    /**
-     * Marks the card after attacking
-     */
-    public void setAttacked() {
-        this.attacked = true;
     }
 
     /**

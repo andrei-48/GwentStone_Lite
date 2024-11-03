@@ -2,6 +2,9 @@ package game.HeroTypes;
 
 import fileio.CardInput;
 import game.Hero;
+import game.MinionCard;
+
+import java.util.ArrayList;
 
 public final class LordRoyce extends Hero {
     public LordRoyce(final CardInput input) {
@@ -9,7 +12,10 @@ public final class LordRoyce extends Hero {
     }
 
     @Override
-    public void useAbility(final int targetRow) {
-        super.useAbility(targetRow);
+    public void useAbility(ArrayList<MinionCard> targetRow) {
+        for (MinionCard minion : targetRow) {
+            minion.setFrozen();
+        }
+        this.setAttacked();
     }
 }

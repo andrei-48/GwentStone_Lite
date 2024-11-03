@@ -10,13 +10,6 @@ import java.util.ArrayList;
 
 public class CommandOutputGenerator {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final int manaErr = 1;
-    private final int placeErr = 2;
-    private final int notTankErr = 3;
-    private final int frozenErr = 4;
-    private final int attackedErr = 5;
-    private final int notEnemyErr = 6;
-    private final int notAllyErr = 7;
 
     private ArrayNode getPlayerDeck(final Player player) {
         ArrayList<MinionCard> deck = player.getDeck();
@@ -50,6 +43,19 @@ public class CommandOutputGenerator {
         return cardsOnTable;
     }
 
+    private ArrayNode getFrozenCards(final ArrayList<ArrayList<MinionCard>> board) {
+        ArrayNode frozenCards = mapper.createArrayNode();
+        for (ArrayList<MinionCard> row : board) {
+
+                for (MinionCard card : row) {
+                    if (card.isFrozen()) {
+                        frozenCards.add(card.toJson());
+                    }
+                }
+        }
+        return frozenCards;
+    }
+
     private ObjectNode coordsNode(final Coordinates coordinates) {
         ObjectNode coordsNode = mapper.createObjectNode();
         coordsNode.put("x", coordinates.getX());
@@ -59,13 +65,17 @@ public class CommandOutputGenerator {
 
     private String errMessage(final int err) {
         return switch (err) {
-            case manaErr -> "Not enough mana to place card on table.";
-            case placeErr -> "Cannot place card on table since row is full.";
-            case notTankErr -> "Attacked card is not of type 'Tank'.";
-            case frozenErr -> "Attacker card is frozen.";
-            case attackedErr -> "Attacker card has already attacked this turn.";
-            case notEnemyErr -> "Attacked card does not belong to the enemy.";
-            case notAllyErr -> "Attacked card does not belong to the current player.";
+            case GameHandler.manaErr -> "Not enough mana to place card on table.";
+            case GameHandler.placeErr -> "Cannot place card on table since row is full.";
+            case GameHandler.notTankErr -> "Attacked card is not of type 'Tank'.";
+            case GameHandler.frozenErr -> "Attacker card is frozen.";
+            case GameHandler.attackedErr -> "Attacker card has already attacked this turn.";
+            case GameHandler.notEnemyErr -> "Attacked card does not belong to the enemy.";
+            case GameHandler.notAllyErr -> "Attacked card does not belong to the current player.";
+            case GameHandler.heroManaErr -> "Not enough mana to use hero's ability.";
+            case GameHandler.herroAttackedErr -> "Hero has already attacked this turn.";
+            case GameHandler.notEnemyRowErr -> "Selected row does not belong to the enemy.";
+            case GameHandler.notAllyRowErr -> "Selected row does not belong to the current player.";
             default -> "Unknown error.";
         };
     }
@@ -128,6 +138,11 @@ public class CommandOutputGenerator {
                 commandOutput.set("output", getCardsOnTable(game.getBoard()));
                 break;
 
+            case "getFrozenCardsOnTable":
+                commandOutput.put("command", "getFrozenCardsOnTable");
+                commandOutput.set("output", getFrozenCards(game.getBoard()));
+                break;
+
             case "getPlayerMana":
                 commandOutput.put("command", "getPlayerMana");
                 commandOutput.put("playerIdx", action.getPlayerIdx());
@@ -168,6 +183,12 @@ public class CommandOutputGenerator {
                 } else {
                     commandOutput.put("gameEnded", gameWonMessage(game));
                 }
+                break;
+
+            case "useHeroAbility":
+                commandOutput.put("command", "useHeroAbility");
+                commandOutput.put("affectedRow", action.getAffectedRow());
+                commandOutput.put("error", errMessage(err));
                 break;
 
             default:

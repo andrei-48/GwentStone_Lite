@@ -13,13 +13,17 @@ public final class GameHandler {
     private int playerTwoWins;
     private final CommandOutputGenerator outputGenerator = new CommandOutputGenerator();
 
-    private final int manaErr = 1;
-    private final int placeErr = 2;
-    private final int notTankErr = 3;
-    private final int frozenErr = 4;
-    private final int attackedErr = 5;
-    private final int notEnemyErr = 6;
-    private final int notAllyErr = 7;
+    public static final int manaErr = 1;
+    public static final int placeErr = 2;
+    public static final int notTankErr = 3;
+    public static final int frozenErr = 4;
+    public static final int attackedErr = 5;
+    public static final int notEnemyErr = 6;
+    public static final int notAllyErr = 7;
+    public static final int heroManaErr = 8;
+    public static final int herroAttackedErr = 9;
+    public static final int notEnemyRowErr = 10;
+    public static final int notAllyRowErr = 11;
 
     public GameHandler(final Input input) {
         this.input = input;
@@ -147,6 +151,26 @@ public final class GameHandler {
         return currentGame.getOpponentHero().getHealth() <= 0;
     }
 
+    private int checkHeroAbility(final Game currentGame, final ActionsInput gameAction) {
+        Hero playerHero = currentGame.getCurrentPlayer().getHero();
+        if (!currentGame.checkHeroMana()) {
+            return heroManaErr;
+        }
+        if (playerHero.hasAttacked()) {
+            return herroAttackedErr;
+        }
+        if (playerHero.getName().equals("Lord Royce") || playerHero.getName().equals("Empress Thorina")) {
+            if (!currentGame.isEnemyRow(gameAction.getAffectedRow())) {
+                return notEnemyRowErr;
+            }
+        } else {
+            if (currentGame.isEnemyRow(gameAction.getAffectedRow())) {
+                return notAllyRowErr;
+            }
+        }
+        return 0;
+    }
+
     /**
      * Takes the input associated to the instance and does the appropriate task required by it
      * @param output The output array in JSON format with every required field
@@ -212,6 +236,16 @@ public final class GameHandler {
                                 incrementWins(currentGame.getPlayerTurn());
                                 output.add(outputGenerator.generate(gameAction, currentGame, 0));
                             }
+                        } else {
+                            output.add(outputGenerator.generate(gameAction, currentGame, error));
+                        }
+                        break;
+
+                    case "useHeroAbility":
+                        error = checkHeroAbility(currentGame, gameAction);
+                        if (error == 0) {
+                            currentGame.getCurrentPlayer().useHeroAbility(currentGame.
+                                    getBoard().get(gameAction.getAffectedRow()));
                         } else {
                             output.add(outputGenerator.generate(gameAction, currentGame, error));
                         }

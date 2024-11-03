@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CardInput;
 
+import java.util.ArrayList;
+
 public class Hero extends Card {
     private final int maxHp = 30;
 
@@ -17,7 +19,7 @@ public class Hero extends Card {
      * Use the ability of the hero
      * @param targetRow The row that the ability is used on
      */
-    public void useAbility(final int targetRow) { }
+    public void useAbility(ArrayList<MinionCard> targetRow) { }
 
     /**
      * Transforms the data of a Hero into an JSON object node to be used
