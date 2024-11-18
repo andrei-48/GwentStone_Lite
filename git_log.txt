@@ -1,0 +1,65 @@
+commit 9658ab6fec95912543a3a4e2f74b954a0ae9adf0
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Sun Nov 3 10:06:00 2024 +0200
+
+    All done. :)
+
+commit 2469186d1382899a8f4cf6d6743d7acdb3845d4e
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Sun Nov 3 09:17:32 2024 +0200
+
+    Added hero abilities + fixed all refs and tests
+
+commit 975cde60376a42d64d60568ec3cf32a71d6048a1
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Sat Nov 2 15:11:33 2024 +0200
+
+    Refactored the Game constructor by adding 2 new functions + implemented attack hero command
+
+commit 1ea488ae2ac9951ff454ebe39d633487084d327e
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Sat Nov 2 13:57:59 2024 +0200
+
+    Added special minion types + implemented the use of abilities for minions + fixed style errors
+
+commit 3e88335fe6cf3c5405c47a77f76355e30da2d0a1
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Fri Nov 1 13:09:53 2024 +0200
+
+    Fixed style errors + start of error handle functions
+
+commit 45781240242d57ad5aa7a955f1d8b9bf73b4139d
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Fri Nov 1 09:37:07 2024 +0200
+
+    Renamed MinionCard class + added constants + fixed a few checkstyle errors
+
+commit c042a1428fd04da3360cf8384a868b64d33920e4
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Fri Nov 1 09:16:25 2024 +0200
+
+    Implemented placeCard function + more debug commands
+
+commit 859094bed30000e212d67444e627a7eebdf1f1d2
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Thu Oct 31 12:18:35 2024 +0200
+
+    added minionCard subclass
+
+commit de71a99b81e56dc964a650a1735d37a63b1743d9
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Thu Oct 31 11:54:59 2024 +0200
+
+    Added output generator + hero selection subclasses + passed first test
+
+commit 890f4fa1fd9b5ed401a39cf53f4b84b2b79181a5
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Thu Oct 31 09:29:45 2024 +0200
+
+    Added hero types and changed rows to be list of lists
+
+commit 312c0b4b0466ae13e40190029b8862e79fa5c054
+Author: g00semAn-48 <152198177+g00semAn-48@users.noreply.github.com>
+Date:   Wed Oct 30 14:48:57 2024 +0200
+
+    Add files via upload
