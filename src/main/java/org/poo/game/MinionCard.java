@@ -25,33 +25,25 @@ public class MinionCard extends Card {
                 || cardInput.getName().equals("Miraj");
     }
 
-    /**
-     * Checks if the card is a 'Tank'
-     * @return True if the card is a 'Tank', False otherwise
-     */
-    public boolean isTank() {
+    public final boolean isTank() {
         return tank;
     }
 
-    /**
-     * Checks if the card is a frozen
-     * @return True if the card is a frozen, False otherwise
-     */
-    public boolean isFrozen() {
+    public final boolean isFrozen() {
         return frozen;
     }
 
     /**
      * Sets the current card as frozen
      */
-    public void setFrozen() {
+    public final void setFrozen() {
         this.frozen = true;
     }
 
     /**
      * Unfreezes the current card
      */
-    public void unsetFrozen() {
+    public final void unsetFrozen() {
         this.frozen = false;
     }
 
@@ -59,7 +51,7 @@ public class MinionCard extends Card {
      * Checks if the card has to be placed on the front row
      * @return True if the card has to be placed on the front row, False otherwise
      */
-    public boolean isFrontRow() {
+    public final boolean isFrontRow() {
         return frontRow;
     }
 
@@ -68,7 +60,7 @@ public class MinionCard extends Card {
      * @param attackedCoord The coordinates of the attacked card
      * @param row The row of the attacked card
      */
-    public void attack(final Coordinates attackedCoord, final ArrayList<MinionCard> row) {
+    public final void attack(final Coordinates attackedCoord, final ArrayList<MinionCard> row) {
         MinionCard attackedCard = row.get(attackedCoord.getY());
         attackedCard.setHealth(attackedCard.getHealth() - this.getAttackDamage());
         this.setAttacked();
@@ -81,7 +73,7 @@ public class MinionCard extends Card {
      * Uses the attack on the enemy hero
      * @param hero The enemy's hero
      */
-    public void attackHero(final Hero hero) {
+    public final void attackHero(final Hero hero) {
         hero.setHealth(hero.getHealth() - this.getAttackDamage());
         this.setAttacked();
     }
@@ -99,7 +91,7 @@ public class MinionCard extends Card {
      * for the output of the program
      * @return The card data in JSON format
      */
-    public ObjectNode toJson() {
+    public final ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
         node.put("mana", this.getMana());

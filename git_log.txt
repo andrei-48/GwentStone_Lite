@@ -1,3 +1,15 @@
+commit ae6393f2017d8c399ac265847b09afbef8462e1e
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Mon Nov 18 09:41:00 2024 +0200
+
+    Migrated to Maven v2.0 (fixed some errors)
+
+commit 7f33e451b5e2b7c1d16e7aedf64d26452549af2e
+Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
+Date:   Mon Nov 18 09:36:03 2024 +0200
+
+    Migrated to Maven
+
 commit 9658ab6fec95912543a3a4e2f74b954a0ae9adf0
 Author: g00semAn-48 <amarinescu0804@stud.acs.upb.ro>
 Date:   Sun Nov 3 10:06:00 2024 +0200

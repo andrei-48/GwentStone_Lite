@@ -26,68 +26,41 @@ public class Card {
         this.attacked = false;
     }
 
-    /**
-     * Return the current health of a card
-     * @return Remaining health
-     */
-    public int getHealth() {
+    public final int getHealth() {
         return health;
     }
 
-    /**
-     * Change the health of a card (used for dealing damage/healing)
-     * @param health The new health amount
-     */
-    public void setHealth(final int health) {
+    public final void setHealth(final int health) {
         this.health = health;
     }
 
-    /**
-     * Get the man cost of a card
-     * @return The amount of mana
-     */
-    public int getMana() {
+
+    public final int getMana() {
         return mana;
     }
 
-    /**
-     * Get the attack damage of a card
-     * @return The amount of attack damage
-     */
-    public int getAttackDamage() {
+
+    public final int getAttackDamage() {
         return attackDamage;
     }
 
-    /**
-     * Change the attack damage of a card
-     * (used for abilities that influence the attack damage)
-     * @param attackDamage The new amount of attack damage
-     */
-    public void setAttackDamage(final int attackDamage) {
+
+    public final void setAttackDamage(final int attackDamage) {
         this.attackDamage = attackDamage;
     }
 
-    /**
-     * Get the description of a card
-     * @return The description
-     */
-    public String getDescription() {
+
+    public final String getDescription() {
         return description;
     }
 
-    /**
-     * Get the colors that a card has
-     * @return The list of colors
-     */
-    public ArrayList<String> getColors() {
+
+    public final ArrayList<String> getColors() {
         return colors;
     }
 
-    /**
-     * Get the name of a card
-     * @return The name
-     */
-    public String getName() {
+
+    public final String getName() {
         return name;
     }
 

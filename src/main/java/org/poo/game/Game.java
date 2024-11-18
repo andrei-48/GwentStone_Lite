@@ -258,10 +258,6 @@ public final class Game {
         return currentPlayer;
     }
 
-    /**
-     * Returns the board in its current state
-     * @return The board object (an arraylist of arraylists of cards)
-     */
     public ArrayList<ArrayList<MinionCard>> getBoard() {
         return board;
     }

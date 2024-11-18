@@ -1,42 +1,67 @@
 
 
 # Tema POO  - GwentStone
+  **Andrei-Bogdan Marinescu - 325CA**
 
-<div align="center"><img src="https://tenor.com/view/witcher3-gif-9340436.gif" width="500px"></div>
+<div align="center"><img src="https://tenor.com/view/witcher3-gif-9340436.gif"
+width="500px"></div>
 
-#### Assignment Link: [https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema](https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema)
+## Task Description
 
+  The program is a card game similar to Hearthstone and Gwent. Each player has
+  their own set of decks with different cards
+  with unique abilities, HP and Attack Damage.
+  Both players also have a Hero assigned automatically by the AI,
+  with a special ability.
+  
+## Implementation details
 
-## Skel Structure
+  The program is composed of many classes that interact with eachother to achieve the 
+  wanted outcome.
+  
+###  GameHandler and CommandOutputGenerator
 
-* src/
-  * checker/ - checker files
-  * fileio/ - contains classes used to read data from the json files
-  * main/
-      * Main - the Main class runs the checker on your implementation. Add the entry point to your implementation in it. Run Main to test your implementation from the IDE or from command line.
-      * Test - run the main method from Test class with the name of the input file from the command line and the result will be written
-        to the out.txt file. Thus, you can compare this result with ref.
-* input/ - contains the tests in JSON format
-* ref/ - contains all reference output for the tests in JSON format
+  These two classes are the main point of the program, and they
+  work together to take the current action from the input and update the game
+  or return the desired output.
+  
+  The actions that directly affect the game (e.g. Actions that kill a card/hero,
+  Actions that freeze cards, ...) are directly handled by the GameHandler.
+  This class checks for possible errors and does the required action.
+  If an error occurred or if the action only requires an output the actions is
+  redirected to the CommandOutputGenerator, alongside an error code,
+  if there is any, or 0 if the action is only an output message.
+  
+  The CommandOutputGenerator then processes the data from the GameHandler
+  and generates the required output message or error message.
+  
+### Card, MinionCard, Hero
 
-## Tests
+  The Card class works as a template for the MinionCard and Hero classes.
+  
+  The MinionCard class is the main type of card used in the program.
+  Each player's deck consists of such cards.
+  This class implements the normal attack and the hero attack methods.
+  It also contains a toJson method that takes the data
+  about the card and turns it into JSON format.
+  
+  The hero class also works as a template for the HeroTypes.
+  It implements a useAbility method that will be used by the successor classes.
+  
+### HeroTypes and SpecialMinions
 
-1. test01_game_start - 4p
-2. test02_place_card - 5p
-3. test03_place_card_invalid - 5p
-4. test04_attack_card - 5p
-5. test05_attack_card_invalid - 5p
-6. test06_use_card_ability - 5p
-7. test07_use_card_ability_invalid - 5p
-8. test08_attack_hero - 5p
-9. test09_attack_hero_invalid - 5p
-10. test10_use_hero_ability_1 - 4p
-11. test11_use_hero_ability_2 - 4p
-12. test12_use_hero_ability_invalid_1 - 4p
-13. test13_use_hero_ability_invalid_2 - 4p
-14. test14_multiple_games_valid - 5p
-15. test15_multiple_games_invalid - 5p
-16. test16_big_game - 10p
+  These two packages contain classes that extend the two described above.
+  They override the useAbility method for the Hero and MinionCard respectively.
+  
+### Player
 
+  This class stores the fields needed by each player
+  such as their hand, deck, hero,... 
+  Actions that affect the players are implemented in this class
+  (e.g. drawCard, placeCard,...).
+  
+### Game
 
-<div align="center"><img src="https://tenor.com/view/homework-time-gif-24854817.gif" width="500px"></div>
+  This class is the center-piece of each game. It sets up both players
+  with their chosen decks and heroes. It also has methods that check for errors
+  to improve readability and reduce the checks made by the GameHandler.
