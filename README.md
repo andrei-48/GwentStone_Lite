@@ -1,6 +1,6 @@
 
 
-# Tema POO  - GwentStone
+# GwentStone Lite (OOP assignment)
   **Andrei-Bogdan Marinescu - 325CA**
 
 <div align="center"><img src="https://tenor.com/view/witcher3-gif-9340436.gif"
